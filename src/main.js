@@ -1,21 +1,21 @@
 import Vue from 'vue'
-import App from './App.vue'
-
-import setings from './settings.json'
 import VueTabs from 'vue-nav-tabs'
+import VueResource from 'vue-resource'
+import VueRouter from 'vue-router'
+
+import App from './App.vue'
 
 import AmCharts from 'amcharts3'
 import AmSerial from 'amcharts3/amcharts/serial'
 
+import settings from './settings.json'
 import exchange from './exchange.js'
-
 import Web3 from 'web3'
-
 import provider from './provider.js'
 
-import VueResource from 'vue-resource'
+import workflow from './components/workflow.vue'
 
-import VueRouter from 'vue-router'
+
 
 // var web3 = new Web3(Web3.currentProvider);
 // console.log(web3)
@@ -27,12 +27,18 @@ Vue.use(VueRouter)
 
 Vue.config.productionTip = false
 
-
+var router = new VueRouter({
+  routes: [
+  	{path: '/:id', name: 'pair', component: workflow},
+  	{path: '', redirect: settings.pairs[0].path}
+  ]
+})
 var app = new Vue({
 	data: {
 		// accounts: VueWeb3.eth.accounts
 	},
 	render: h => h(App),
+	router: router,	
 	created() {
 
 		var web3 = provider.connectWeb3();

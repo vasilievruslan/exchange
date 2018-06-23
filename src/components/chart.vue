@@ -33,19 +33,20 @@
 		name: 'chart',
 		data(){
 			return{
-
+				chartData: [],
 			}
 		},
 		created(){
-			var chartData = [];
+
+			let vm = this;
 			generateChartData();
 
 			function generateChartData() {
 				var firstDate = new Date();
 				firstDate.setHours(0, 0, 0, 0);
-				firstDate.setDate(firstDate.getDate() - 2000);
+				firstDate.setDate(firstDate.getDate() - 1000);
 
-				for (var i = 0; i < 2000; i++) {
+				for (var i = 0; i < 50; i++) {
 					var newDate = new Date(firstDate);
 
 					newDate.setDate(newDate.getDate() + i);
@@ -70,7 +71,7 @@
 					var volume = Math.round(Math.random() * (1000 + i)) + 100 + i;
 					var value = Math.round(Math.random() * (30) + 100);
 
-					chartData[i] = ({
+					vm.chartData[i] = ({
 						"date": newDate,
 						"open": open,
 						"close": close,
@@ -82,7 +83,7 @@
 				}
 			}
 
-			AmCharts.makeChart("chartdiv", {
+			var chart = AmCharts.makeChart("chartdiv", {
 				"type": "stock",
 				"theme": "black",
 				"dataSets": [{
@@ -106,7 +107,7 @@
 						"toField": "value"
 					}],
 					"color": "#fff",
-					"dataProvider": chartData,
+					"dataProvider": vm.chartData,
 					"title": "West Stock",
 					"categoryField": "date"
 				}, {
@@ -226,6 +227,7 @@
 				// 	"enabled": true
 				// }
 			});
+			console.log(chart.dataSet)
 		}
 	}
 </script>

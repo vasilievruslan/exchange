@@ -3,14 +3,21 @@
 		<div class="header__cotainer --left">
 			<div class="header__logo"><img src="../assets/excaliburLogo.svg" alt="excalibur_alpha" class="header__logo-img"></div>
 			<div class="header__pairs">
-				<div v-on:click="pairs = !pairs" class="cur-pair">{{ curPair }} <span><svg id="SVGDoc" width="14" height="7" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:avocode="https://avocode.com/" viewBox="0 0 14 7"><defs><path d="M283,20l-7,7l-7,-7v0" id="Path-0"/><clipPath id="ClipPath1016"><use xlink:href="#Path-0" fill="#ffffff"/></clipPath></defs><desc>Generated with Avocode.</desc><g transform="matrix(1,0,0,1,-269,-20)"><g><title>arrow</title><use xlink:href="#Path-0" fill-opacity="0" fill="#ffffff" stroke-linejoin="miter" stroke-linecap="butt" stroke-opacity="1" stroke="#aeaeae" stroke-miterlimit="50" stroke-width="2" clip-path="url(&quot;#ClipPath1016&quot;)"/></g></g></svg></span></div>
-				<ul v-if="pairs" class="pairs">
-					<li v-for="item in pairsList" class="pair__item"><router-link :to="item">{{ item }}</router-link></li>
+				<div v-on:click="dropdown = !dropdown" class="cur-pair">{{ pair.name }} <span><svg id="SVGDoc" width="14" height="7" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:avocode="https://avocode.com/" viewBox="0 0 14 7"><defs><path d="M283,20l-7,7l-7,-7v0" id="Path-0"/><clipPath id="ClipPath1016"><use xlink:href="#Path-0" fill="#ffffff"/></clipPath></defs><g transform="matrix(1,0,0,1,-269,-20)"><g><title>arrow</title><use xlink:href="#Path-0" fill-opacity="0" fill="#ffffff" stroke-linejoin="miter" stroke-linecap="butt" stroke-opacity="1" stroke="#aeaeae" stroke-miterlimit="50" stroke-width="2" clip-path="url(&quot;#ClipPath1016&quot;)"/></g></g></svg></span></div>
+
+
+				<ul v-if="dropdown" class="pairs">
+					<li v-on:click="dropdown = !dropdown" v-for="item in pairs" class="pair__item"><router-link :to="{ name: 'pair', params: { id: item.path }}">{{ item.name }}</router-link></li>
 				</ul>
 			</div>
 			<div class="header__balances">
 				<div class="balances__title">balances:</div>
-				<div class="token-balances-list__item"><span class="amount">{{ balances[0].amount }}</span> <span class="symbol"> {{ balances[0].symbol }}, </span><span class="amount">{{ balances[1].amount }}</span> <span class="symbol"> {{ balances[1].symbol }}</span></div>
+				<div class="token-balances-list__item">
+					<span class="amount">{{ amount1 }}</span>
+					<span class="symbol"> {{ pair.symbols[0] }}, </span>
+					<span class="amount">{{ amount2 }}</span> 
+					<span class="symbol"> {{ pair.symbols[1] }}</span>
+				</div>
 			</div>
 		</div>
 		<div class="header__cotainer --right">
@@ -52,22 +59,50 @@
 	import exchange from '../exchange.js'
 	import settings from '../settings.json'
 
+
+
 	const web3 = provider.connectWeb3();
 
 	export default {
 		name: 'headerMain',
 		data: function(){
 			return {
-				pairs: false,
-				balances: [],
+				dropdown: false,
+				amount1: 'waiting',
+				amount2: 'waiting',
 			}
 		},
-		props: {
-			curPair: String,
-			pairsList: Array,
-			balances: Array,
+		computed: {
+			pairs() {
+				return settings.pairs
+			},
 		},
+		props: {
+			contract: Object,
+			from: String,
+			pair: Object,
+		},
+		methods: {
+			showBalance(){
+				const vm = this;
+				exchange.balanceOf(vm.contract, vm.pair.tokens[0], vm.from)
+	        	.then(res => vm.amount1 = res / 10**18)
+	        	exchange.balanceOf(vm.contract, vm.pair.tokens[1], vm.from)
+	        	.then(res => vm.amount2 = res / 10**18)
+	        	console.log('show');
+			},
+		},
+		watch:{
+			pair(){
+				this.showBalance();
+			},
+		},
+
 		created() {
+			const vm = this;
+			setInterval(function () {
+				vm.showBalance();
+			}, 5000)
 		}
 	}
 </script>
@@ -99,11 +134,14 @@
 	}
 	.cur-pair{
 		cursor: pointer;
+		text-transform: uppercase;
 	}
 	.pairs{
 		position: absolute;
 		list-style-type: none;
-		padding: 0;
+		padding: 20px;
+		z-index: 2;
+		background-color: #141414;
 	}
 	.pair__item{
 		margin: 7px 0px;

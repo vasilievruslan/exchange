@@ -96,9 +96,7 @@
 						// Init
 						var res = [];
 						processData(data.bids, "bids", true);
-						processData(data.asks, "asks", false);
-
-						// console.log(res);
+						processData(data.asks, "asks", false);;
 						return res;
 					}
 				},

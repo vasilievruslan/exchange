@@ -54,12 +54,21 @@ export default{
 		});
 		return await str;
 	},
-	depositToken: async function (contract_, from_, token_, amount_) {
+	depositToken: async function (contract_, tokenContract_, from_, spender_, token_, amount_) {
 		let str;
+		const aprove = await tokenContract_.methods.approve(spender_, amount_).send({from:from_},
+			function(err, hash){
+				if (!err){
+					str = hash
+					console.log("aprove: " + hash);
+				} else {
+					console.log(err);
+				}
+		});
 		const send = await contract_.methods.depositToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					console.log(hash);
+					console.log('deposit: ' + hash);
 					str = hash;
 				} else {
 					console.log(err);

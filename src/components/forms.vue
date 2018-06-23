@@ -6,13 +6,13 @@
 					<form class="forms__box form__buy">
 						<div class="form__buy__amount">
 							<p class="input__title">AMOUNT</p>
-							<p class="input__contaner --amount"><input v-model="buyAmount" placeholder="amount" type="number"><span class="symbol-toolkit">omg</span></p>
+							<p class="input__contaner --amount"><input v-model="buyAmount" placeholder="amount" type="number"><span class="symbol-toolkit">{{pair.symbols[0]}}</span></p>
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input v-model="buyPrice" placeholder="price" type="number"><span class="symbol-toolkit">eth</span></p>
+							<p class="input__contaner --price"><input v-model="buyPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
-						<p>TOTAL = <span>{{buyTotal}}</span> ETH</p>
+						<p>TOTAL = <span>{{buyTotal}}</span> {{pair.symbols[1]}}</p>
 						<p>CHOOSE EXPIRES: 
 							<span v-for="item in expires">
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
@@ -29,19 +29,19 @@
 					<form class="forms__box form__sell">
 						<div class="form__buy__amount">
 							<p class="input__title">AMOUNT</p>
-							<p class="input__contaner --amount"><input v-model="sellAmount" placeholder="amount" type="number"><span class="symbol-toolkit">omg</span></p>
+							<p class="input__contaner --amount"><input v-model="sellAmount" placeholder="amount" type="number"><span class="symbol-toolkit">{{pair.symbols[0]}}</span></p>
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input v-model="sellPrice" placeholder="" type="number"><span class="symbol-toolkit">eth</span></p>
+							<p class="input__contaner --price"><input v-model="sellPrice" placeholder="" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
-						<p>TOTAL = <span>{{sellTotal}}</span> ETH</p>
+						<p>TOTAL = <span>{{sellTotal}}</span> {{pair.symbols[0]}}</p>
 						<p>CHOOSE EXPIRES: 
 							<span v-for="item in expires">
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
 								<label :class="{active: picked == item.blockAmount}" class="expries " :for="item.title">{{item.title}}</label>
 							</span>
-						<p class="button-container"><button class="button sell">PLACE BUY ORDER</button></p>
+						<p class="button-container"><button v-on:click="postSellOrder" class="button sell">PLACE SELL ORDER</button></p>
 					</form>
 				</div>	
 			</v-tab>
@@ -50,43 +50,29 @@
 				<div class="forms__content">
 					<form class="forms__box form__manage">
 						<div class="form__sell__deposit">
-							<p class="input__title">DEPOSIT ->
-							 	<span v-for="item in pair">
-									<input 
-										class="radio-btn" 
-										type="radio" 
-										:id="item.symbol" 
-										:value="item.address" 
-										v-model="depositToken">
-									<label 
-										:class="{active: depositToken == item.address}" 
-										class="expries " 
-										:for="item.symbol">{{item.symbol}}
-									</label>
-								</span>
-							[choose currency]</p>
-							<p class="input__contaner --amount"><input v-model="depositAmount" placeholder="amount" type="number"><button v-on:click="deposit" class="btn btn_deposit">SENT</button></p>
+							<p class="input__title">DEPOSIT -><span v-for="item in tokensData"><input 
+								class="radio-btn"  
+								type="radio"  
+								:id="item.name"  
+								:value="item.token"  
+								v-model="depositToken"><label  
+								:class="{active: depositToken == item.token}"  
+								class="expries " 
+								:for="item.name">{{item.name}}</label></span>[choose currency]</p>
+								<p class="input__contaner --amount"><input v-model="depositAmount" placeholder="amount" type="number"><button v-on:click="deposit" class="btn btn_deposit">SENT</button></p>
 						</div>
 					</form>
 					<form class="forms__box form__manage">
 						<div class="form__sell__withdraw">
-							<p class="input__title">WITHDRAW ->
-
-								<span v-for="item in pair">
-									<input 
+							<p class="input__title">WITHDRAW -><span v-for="item in tokensData"><input
 										class="radio-btn" 
 										type="radio" 
-										:id="item.address" 
-										:value="item.address" 
-										v-model="withdrawToken">
-									<label 
-										:class="{active: withdrawToken == item.address}" 
+										:id="item.token" 
+										:value="item.token" 
+										v-model="withdrawToken"><label 
+										:class="{active: withdrawToken == item.token}" 
 										class="expries" 
-										:for="item.address">
-										{{item.symbol}}
-									</label>
-								</span>
-							 [choose currency]</p>
+										:for="item.token">{{item.name}}</label></span>[choose currency]</p>
 							<p class="input__contaner --amount"><input v-model="withdrawAmount" placeholder="amount" type="number"><button v-on:click="withdraw" class="btn btn_deposit">SENT</button></p>
 						</div>
 					</form>
@@ -108,16 +94,8 @@
 		name: 'forms',
 		data(){
 			return {
-				pair: [{
-					symbol: 'OMG',
-					address: '0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0'
-				},{
-					symbol: 'ETH',
-					address: '0x0000000000000000000000000000000000000000'
-				}],
-
-				depositToken: '',
-				withdrawToken: '',
+				depositToken: this.pair.tokens[0],
+				withdrawToken: this.pair.tokens[0],
 				expires: [
 					{
 						title: '1H',
@@ -134,18 +112,36 @@
 				],
 				buyAmount: 0,
 				buyPrice: 0.1,
-				sellAmount: '',
-				sellPrice: '',
-				depositAmount: '',
-				withdrawAmount: '',
-				contract: '',
-				hash: '',
-				sign: '',
-				picked: ''
+				sellAmount: 0,
+				sellPrice: 0.1,
+				depositAmount: null,
+				withdrawAmount: null,
+				contract: null,
+				tokenContarct: null,
+				hash: null,
+				sign: null,
+				picked: 1232132,
+
+				token1: this.pair.tokens[0],
+				token2: this.pair.tokens[1],
+
+				spender: settings.contractAddress,
 			}
 		},
 		computed: {
-			resource: function() {
+			tokensData(){
+				return [
+					{
+						name: this.pair.symbols[0],
+						token: this.pair.tokens[0],
+					},
+					{
+						name: this.pair.symbols[1],
+						token: this.pair.tokens[1],
+					}
+				]
+			},
+			resource() {
 	            return this.$resource('https://exapi1.herokuapp.com/v0.1/pushOrder')
 	        },
 			buyTotal(){
@@ -155,40 +151,81 @@
 				return this.sellAmount * this.sellPrice; 
 			},
 		},
+		watch: {
+			tokensData(){
+				this.depositToken = this.pair.tokens[0];
+				this.withdrawToken = this.pair.tokens[0];
+			},
+			pair(){
+				this.token1 = this.pair.tokens[0];
+				this.token2 = this.pair.tokens[1];
+				console.log("something changed")
+			}
+		},
 		props:{
+			pair: Object,
 			from: String,
-			check: String,
 		},
 		methods: {
 			deposit(e) {
+				const vueSelf = this
 				e.preventDefault();
-				exchange.deposit(this.contract, this.from, this.depositAmount * 10**18).then(res => console.log(res), err => console.log(err))
+				if (this.depositToken == '0x0000000000000000000000000000000000000000') {
+					exchange.deposit(this.contract, this.from, this.depositAmount * 10**18).then(res => console.log(res), err => console.log(err))
+				}else{
+					(async function () {
+						const contract = exchange.initContract(web3, settings.tokenAbi, vueSelf.depositToken)
+						console.log(contract)
+						await exchange.depositToken(vueSelf.contract, contract, vueSelf.from, vueSelf.spender, vueSelf.depositToken, vueSelf.depositAmount * 10**18).then(res => console.log(res), err => console.log(err))
+					})()
+				}
 				
 			},
 			withdraw(e) {
 				e.preventDefault();
-				exchange.withdraw(this.contract, this.from, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
+				if (this.withdrawToken == '0x0000000000000000000000000000000000000000') {
+					exchange.withdraw(this.contract, this.from, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
+				}else{
+					exchange.withdrawToken(this.contract, this.from, this.withdrawToken, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
+				}
 			},
 			postBuyOrder(e){
 				e.preventDefault();
-				const VueThis = this;
+				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, VueThis.from, settings.contractAddress, '0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0', VueThis.buyAmount * 10**18, '0x0000000000000000000000000000000000000000', VueThis.buyTotal * 10**18, 10000, nonce).then(res => VueThis.sign = res) 
+					await exchange.getSign(web3, vm.from, settings.contractAddress, vm.token1, vm.buyAmount * 10**18, vm.token2, vm.buyTotal * 10**18, 10000, nonce).then(res => vm.sign = res) 
 
-					await VueThis.resource.save({
-						"maker": VueThis.from,
-						"tokenGet": "0x0000000000000000000000000000000000000000",
-						"amountGet": VueThis.buyAmount,
-						"tokenGive": "0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0",
-						"amountGive": VueThis.buyTotal * 10**18,
+					await vm.resource.save({
+						"maker": vm.from,
+						"tokenGet": vm.token1,
+						"amountGet": vm.buyAmount,
+						"tokenGive": vm.token2,
+						"amountGive": vm.buyTotal,
 						"expires": 10000,
 						"nonce": nonce,
-						"sig": VueThis.sign
+						"sig": vm.sign
 					}).then(res => console.log(res))
 				})()
+			},
+			postSellOrder(e){
+				e.preventDefault();
+				const vm = this;
+				(async function(){
+					var nonce = Math.floor(Math.random() * 1000000) + 100
+					await exchange.getSign(web3, vm.from, settings.contractAddress, vm.token2, vm.buyAmount * 10**18, vm.token1, vm.buyTotal * 10**18, 10000, nonce).then(res => vm.sign = res) 
 
-				
+					await vm.resource.save({
+						"maker": vm.from,
+						"tokenGet": vm.token2,
+						"amountGet": vm.buyAmount,
+						"tokenGive": vm.token1,
+						"amountGive": vm.buyTotal,
+						"expires": 10000,
+						"nonce": nonce,
+						"sig": vm.sign
+					}).then(res => console.log(res))
+				})()
 			},
 
 		},
@@ -276,6 +313,7 @@
 	.expries{
 		margin: 5px;
 		cursor: pointer;
+		text-transform: uppercase;
 		&.active{
 			color: #0be881;
 		}

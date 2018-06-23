@@ -1,9 +1,5 @@
 <template>
 	<div class="window orederbook">
-		<!-- <div class="tabs">
-			<div class="tabs__item active">ORDERBOOK</div>
-			<div class="tabs__item">PERSONAL OB</div>
-		</div> -->
 		<vue-tabs>
 			<v-tab title="ORDERBOOK">
 				<div class="orederbook-wrap">
@@ -52,55 +48,48 @@
 
 	export default{
 		name: 'orederbook',
-		data: function () {
+		data() {
 			return {
 				listBuy: [],
 				listSell: [],
+				tokenGetAddress: this.pair.tokens[0],
+				tokenGiveAddress: this.pair.tokens[1],
 			}
 		},
 		props: {
-			pair: Array,
+			pair: Object,
 		},
-		computed: {
-			sellOrders: function () {
-				let orders = []
-				for (var i = 20; i >= 0; i--) {
-					orders[i] = {
-						value: Math.random().toFixed(4),
-						amount: Math.random().toFixed(4),
-						price: Math.random().toFixed(4),
-						fiat: Math.random().toFixed(4),
-						hash: Math.random().toString(),
-					}
-				}
-				return orders;
+		watch: {
+			pair(){
+				this.tokenGetAddress = this.pair.tokens[0];
+				this.tokenGiveAddress = this.pair.tokens[1];
 			}
 		},
 		methods: {
-			getBuyOreders(tokenGetAddress, tokenGiveAddress) {
-				this.$http.get('https://exapi1.herokuapp.com/v0.1/orders?tget='+ tokenGetAddress +'&tgive='+ tokenGiveAddress +'&page=0').then(response => {
-					this.listBuy = response.body._items
+			getOreders() {
+				const vm = this
+
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/orders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(response => {
+					vm.listBuy = response.body._items
+				}, response => {
+					console.log(response)
+				});
+
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/orders?tget=${vm.tokenGiveAddress}&tgive=${vm.tokenGetAddress}&page=0`).then(response => {
+					vm.listSell = response.body._items
 				}, response => {
 					console.log(response)
 				});
 			},
-			getSellOreders(tokenGetAddress, tokenGiveAddress) {
-				this.$http.get('https://exapi1.herokuapp.com/v0.1/orders?tget='+ tokenGetAddress +'&tgive='+ tokenGiveAddress +'&page=0').then(response => {
-					this.listSell = response.body._items
-				}, response => {
-					console.log(response)
-				});
-		    },
 	    },
 	    created() {
-	    	var vueSelf = this;
+	    	var vm = this;
+
+	    	vm.getOreders()
 			setInterval(function () {
-				vueSelf.getBuyOreders('0x0000000000000000000000000000000000000000', '0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0')
-				vueSelf.getSellOreders('0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0', '0x0000000000000000000000000000000000000000')
-			}, 3000)
+				vm.getOreders()
+			}, 10000)
 	    },
-
-
 	}
 </script>
 

@@ -561,255 +561,277 @@
 			}
 		],
 	"tokenAbi":
+	[
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "name",
+			"outputs": [
+				{
+					"name": "",
+					"type": "string"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "_spender",
+					"type": "address"
+				},
+				{
+					"name": "_value",
+					"type": "uint256"
+				}
+			],
+			"name": "approve",
+			"outputs": [
+				{
+					"name": "success",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "totalSupply",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "_from",
+					"type": "address"
+				},
+				{
+					"name": "_to",
+					"type": "address"
+				},
+				{
+					"name": "_value",
+					"type": "uint256"
+				}
+			],
+			"name": "transferFrom",
+			"outputs": [
+				{
+					"name": "success",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "decimals",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint8"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "balanceOf",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "owner",
+			"outputs": [
+				{
+					"name": "",
+					"type": "address"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "symbol",
+			"outputs": [
+				{
+					"name": "",
+					"type": "string"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "_to",
+					"type": "address"
+				},
+				{
+					"name": "_value",
+					"type": "uint256"
+				}
+			],
+			"name": "transfer",
+			"outputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "_spender",
+					"type": "address"
+				},
+				{
+					"name": "_value",
+					"type": "uint256"
+				},
+				{
+					"name": "_extraData",
+					"type": "bytes"
+				}
+			],
+			"name": "approveAndCall",
+			"outputs": [
+				{
+					"name": "success",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "",
+					"type": "address"
+				},
+				{
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "allowance",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "adminVer",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"name": "from",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"name": "to",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "Transfer",
+			"type": "event"
+		}
+	],
+	"pairs": 
 		[
 			{
-				"constant": true,
-				"inputs": [],
-				"name": "name",
-				"outputs": [
-					{
-						"name": "",
-						"type": "string"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"name": "_spender",
-						"type": "address"
-					},
-					{
-						"name": "_value",
-						"type": "uint256"
-					}
-				],
-				"name": "approve",
-				"outputs": [
-					{
-						"name": "success",
-						"type": "bool"
-					}
-				],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [],
-				"name": "totalSupply",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"name": "_from",
-						"type": "address"
-					},
-					{
-						"name": "_to",
-						"type": "address"
-					},
-					{
-						"name": "_value",
-						"type": "uint256"
-					}
-				],
-				"name": "transferFrom",
-				"outputs": [
-					{
-						"name": "success",
-						"type": "bool"
-					}
-				],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [],
-				"name": "decimals",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint8"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "balanceOf",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [],
-				"name": "owner",
-				"outputs": [
-					{
-						"name": "",
-						"type": "address"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [],
-				"name": "symbol",
-				"outputs": [
-					{
-						"name": "",
-						"type": "string"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"name": "_to",
-						"type": "address"
-					},
-					{
-						"name": "_value",
-						"type": "uint256"
-					}
-				],
-				"name": "transfer",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"name": "_spender",
-						"type": "address"
-					},
-					{
-						"name": "_value",
-						"type": "uint256"
-					},
-					{
-						"name": "_extraData",
-						"type": "bytes"
-					}
-				],
-				"name": "approveAndCall",
-				"outputs": [
-					{
-						"name": "success",
-						"type": "bool"
-					}
-				],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"name": "",
-						"type": "address"
-					},
-					{
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "allowance",
-				"outputs": [
-					{
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [],
-				"name": "adminVer",
-				"outputs": [
-					{
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"name": "from",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"name": "value",
-						"type": "uint256"
-					}
-				],
-				"name": "Transfer",
-				"type": "event"
+				"name":"eth/erc20",
+				"path":"eth_erc20",
+				"symbols": ["eth", "erc20"],
+				"tokens": ["0x0000000000000000000000000000000000000000", "0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0"],
+				"amount": ["waiting", "waiting"]
+			},{
+				"name":"eth/omg",
+				"path":"eth_omg",
+				"symbols": ["eth", "omg"],
+				"tokens": ["0x0000000000000000000000000000000000000000", "0xa95b9061a456f71d307cdff5b5107be15dd4585e"],
+				"amount": ["waiting", "waiting"]
+			},{
+				"name":"eth/opl",
+				"path":"eth_opl",
+				"symbols": ["eth", "opl"],
+				"tokens": ["0x0000000000000000000000000000000000000000", "0x920b53bca9a3d6c7d344cb9f26fd7c1739698e41"],
+				"amount": ["waiting", "waiting"]
 			}
 		]
 }

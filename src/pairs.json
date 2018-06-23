@@ -1,0 +1,21 @@
+[
+	{
+		"name":"eth/erc20",
+		"path":"eth_erc20",
+		"symbols": ["eth", "erc20"],
+		"tokens": ["0x0000000000000000000000000000000000000000", "0xc34376569aa1afbe982c4ecc6ea0d78f8077b3d0"],
+		"amount": []
+	},{
+		"name":"eth/omg",
+		"path":"eth_omg",
+		"symbols": ["eth", "omg"],
+		"tokens": ["0x0000000000000000000000000000000000000000", "0xa95b9061a456f71d307cdff5b5107be15dd4585e"],
+		"amount": []
+	},{
+		"name":"eth/opl",
+		"path":"eth_opl",
+		"symbols": ["eth", "opl"],
+		"tokens": ["0x0000000000000000000000000000000000000000", "0x920b53bca9a3d6c7d344cb9f26fd7c1739698e41"],
+		"amount": []
+	},
+]
