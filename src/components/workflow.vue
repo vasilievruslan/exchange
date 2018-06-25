@@ -12,6 +12,7 @@
 	       
 	        <orederbook
 	        	:pair="pair"
+	        	:from="from"
 	        ></orederbook>
 
 	        <chat></chat>

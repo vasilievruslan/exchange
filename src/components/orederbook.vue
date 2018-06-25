@@ -13,7 +13,7 @@
 							<div v-for="item in listBuy" v-bind:data-hash="item.hash" class="buy row">
 								<div class="col value"><span class="value-bar"></span></div>
 								<div class="col AMOUNT">{{item.amountGet}}</div>
-								<div class="col PRICE">{{item.amountGive / 10**18.0 / item.amountGet}}</div>
+								<div class="col PRICE">{{item.amountGive / item.amountGet}}</div>
 								<div class="col FIAT">$</div>
 							</div>
 						</div>
@@ -25,7 +25,7 @@
 							<div v-for="item in listSell" v-bind:data-hash="item.hash" class="sell row">
 								<div class="col value"><span class="value-bar"></span></div>
 								<div class="col AMOUNT">{{item.amountGet}}</div>
-								<div class="col PRICE">{{item.amountGive / 10**18.0 / item.amountGet}}</div>
+								<div class="col PRICE">{{item.amountGive / item.amountGet}}</div>
 								<div class="col FIAT">$</div>
 							</div>
 						</div>
@@ -33,6 +33,23 @@
 				</div>
 			</v-tab>
 			<v-tab title="PERSONAL OB">
+				<div class="orederbook-wrap">
+					<div class="orederbook__table orederbook__titles row">
+						<div class="col">AMOUNT</div>
+						<div class="col">PRICE</div>
+						<div class="col">FIAT</div>
+					</div>
+					<div class="orederbook__container">
+						<div class="orederbook__table buy">
+							<div v-for="item in personalOrders" v-bind:data-hash="item.hash" class="buy row">
+								<div class="col value"><span class="value-bar"></span></div>
+								<div class="col AMOUNT">{{item.amountGet}}</div>
+								<div class="col PRICE">{{item.amountGive / item.amountGet}}</div>
+								<div class="col FIAT">$</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</v-tab>
 		</vue-tabs>
 	</div>
@@ -54,10 +71,12 @@
 				listSell: [],
 				tokenGetAddress: this.pair.tokens[0],
 				tokenGiveAddress: this.pair.tokens[1],
+				personalOrders: null,
 			}
 		},
 		props: {
 			pair: Object,
+			from: String,
 		},
 		watch: {
 			pair(){
@@ -67,7 +86,7 @@
 		},
 		methods: {
 			getOreders() {
-				const vm = this
+				const vm = this;
 
 				this.$http.get(`https://exapi1.herokuapp.com/v0.1/orders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(response => {
 					vm.listBuy = response.body._items
@@ -81,13 +100,23 @@
 					console.log(response)
 				});
 			},
+			getPersonalOreders(){
+				const vm = this;
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalOrders?tget=${vm.tokenGetAddress}&tgive=${this.tokenGiveAddress}&maker=${vm.from}&page=0`)
+				.then(res => {
+					vm.personalOrders = res.body._items
+				}, err => {
+					console.log(err)
+				});
+			}
 	    },
 	    created() {
 	    	var vm = this;
 
 	    	vm.getOreders()
 			setInterval(function () {
-				vm.getOreders()
+				vm.getOreders();
+				vm.getPersonalOreders();
 			}, 10000)
 	    },
 	}
@@ -102,37 +131,36 @@
 		border: 1px solid  #141414;
 		box-sizing: border-box;
 	}
-	.tabs{
-		display: flex;
-		justify-content: space-between;
-		.tabs__item{
-			text-align: center;
-			width: 100%;
-			padding: 7px;
-			box-sizing: border-box;
-			cursor: pointer;
-
-			&.active{
-				background-color: #2c2c2c;
-				cursor: default;
-			}
-		}
-	}
 	.orederbook{
 		width: 378px;
 		font-size: 17px;
-		flex: 0 0 540px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 	}
 	.orederbook-wrap{
 		background-color: #2c2c2c;
 		font-size: 14px;
+		height: 100%;
+	}
+	.orederbook__titles{
+		color: #aeaeae;
+		flex: 1 43px;
+		.col{
+			text-transform: uppercase;
+			padding: 10px 0px 15px;
+			font-size: 14px;
+		}
 	}
 	.orederbook__container{
-		max-height: 440px;
-		overflow-x: scroll;
-		&::-webkit-scrollbar { 
-		    display: none;
-		}
+		flex: 0 100%;
+		height: 445px;
+		overflow: scroll;
+		-ms-overflow-style: none;  // IE 10+
+    	overflow: -moz-scrollbars-none;  // Firefox
+    	&::-webkit-scrollbar { 
+    		display: none;
+    	}
 
 	}
 	.orederbook__spread{
@@ -148,11 +176,6 @@
 			text-align: center;
 			flex-grow: 3;
 		}
-	}
-	.orederbook__titles{
-		color: #aeaeae;
-		padding-top: 10px;
-		margin-bottom: 20px;
 	}
 	.row{
 		display: flex;

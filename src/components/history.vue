@@ -55,28 +55,52 @@
 	.history{
 		width: 378px;
 		height: 540px;
-		flex: 0 0 540px;
+		flex: 1;
 		display: flex;
 		flex-direction: column;
 	}
-	.tabs{
-		flex: 0 0 6%;
+	.vue-tabs{
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+	.nav-tabs-navigation{
+		flex: 0 30px;
+	}
+	.tab-content{
+		flex: 1 100%;
+		display: flex;
+		flex-direction: column;
+	}
+	.tab-container{
+		display: flex;
+		flex-direction: column;
+		flex: 1;
 	}
 	.history__table{
 		background-color: #2c2c2c;
-		flex: 1 0 100%;
-		max-height: 94%;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
 	}
 	.history__header{
 		color: #aeaeae;
+		flex: 1 43px;
 		.col{
 			text-transform: uppercase;
-			padding: 10px 0px 15px; 	
+			padding: 10px 0px 15px;
+			font-size: 14px;
 		}
 	}
 	.history__container{
-		height: 445px;
+		flex: 0 100%;
+		height: 200px;
 		overflow: scroll;
+		-ms-overflow-style: none;  // IE 10+
+    	overflow: -moz-scrollbars-none;  // Firefox
+    	&::-webkit-scrollbar { 
+    		display: none;
+    	}
 	}
 	.history__row{
 		font-weight: 400;

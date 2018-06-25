@@ -22,7 +22,7 @@ export default{
 		return new Web3(new Web3.providers.WebsocketProvider(provider_));
 	},
 	getAccount: async function (web3_, accountIndex_) { 
-		const account = await web3_.eth.getAccounts();
+		await web3_.eth.getAccounts();
 		return account[accountIndex_];
 	},	
 	initContract: function (web3_, abi_, contractAddress_) {
@@ -30,7 +30,7 @@ export default{
 	},
 	deposit: async function (contract_, from_, amount_) {
 		let str;
-		const send = await contract_.methods.deposit().send({from:from_, value:amount_},
+		await contract_.methods.deposit().send({from:from_, value:amount_},
 			function(err, hash){
 				if (!err){
 					str = hash;
@@ -43,7 +43,7 @@ export default{
 	},
 	withdraw: async function (contract_, from_, amount_) {
 		let str;
-		const send = await contract_.methods.withdraw(amount_).send({from:from_},
+		await contract_.methods.withdraw(amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash;
@@ -56,7 +56,7 @@ export default{
 	},
 	depositToken: async function (contract_, tokenContract_, from_, spender_, token_, amount_) {
 		let str;
-		const aprove = await tokenContract_.methods.approve(spender_, amount_).send({from:from_},
+		await tokenContract_.methods.approve(spender_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
@@ -65,7 +65,7 @@ export default{
 					console.log(err);
 				}
 		});
-		const send = await contract_.methods.depositToken(token_, amount_).send({from:from_},
+		await contract_.methods.depositToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					console.log('deposit: ' + hash);
@@ -78,7 +78,7 @@ export default{
 	},
 	withdrawToken: async function (contract_, from_, token_, amount_) {
 		let str;
-		const sent = await contract_.methods.withdrawToken(token_, amount_).send({from:from_},
+		await contract_.methods.withdrawToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					console.log(hash);
@@ -91,7 +91,7 @@ export default{
 	},
 	balanceOf: async function (contract_, token_, user_) {
 		let str;
-		const call = await contract_.methods.balanceOf(token_, user_).call(
+		await contract_.methods.balanceOf(token_, user_).call(
 			function(err, res){
 				if (!err){
 					str = res;
@@ -104,7 +104,7 @@ export default{
 	},
 	order: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		let str;
-		const send = await contract_.methods.order(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_).send({from:from_},
+		await contract_.methods.order(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash;
@@ -121,7 +121,7 @@ export default{
 	// },
 	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_) {
 		let str;
-		const send = await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_).send({from:from_},
+		await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					console.log(hash);
@@ -133,7 +133,7 @@ export default{
 	},
 	cancelOrder: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_) {
 		let str;
-		const send = await contract_.methods.cancelOrder(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_).send({from:from_},
+		await contract_.methods.cancelOrder(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
@@ -179,7 +179,7 @@ export default{
 	},
 	approve: async function (contract_, from_, spender_, value_) {
 		let str;
-		const send = await contract_.methods.approve(spender_, value_).send({from:from_},
+		await contract_.methods.approve(spender_, value_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
@@ -192,7 +192,7 @@ export default{
 	},
 	transferFrom: async function (contract_, from_, _from, to_, value_) {
 		let str;
-		const send = await contract_.methods.transferFrom(_from, to_, value_).send({from:from_},
+		await contract_.methods.transferFrom(_from, to_, value_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
@@ -205,7 +205,7 @@ export default{
 	},
 	orderEvent: async function (contract_) {
 		let str;
-		const send = await contract_.events.Order({fromBlock: 0}, 
+		await contract_.events.Order({fromBlock: 0}, 
 			function(error, event){
 				if (!error) {
 					str = event

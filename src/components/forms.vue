@@ -273,7 +273,7 @@
 		}
 	}
 	.forms{
-		flex: 1 0;
+		flex: 0 0 437px;
 	}
 	.tabs__item{
 		text-transform: uppercase;

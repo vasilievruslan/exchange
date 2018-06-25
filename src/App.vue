@@ -1,19 +1,9 @@
 
 <template>
   <div id="app">
-
-    <!-- <headerMain
-      curPair="ETH/USD"
-      :pairsList="pairsList"
-      :balances="bal"
-      :contract="contract"
-      :from="from"
-    ></headerMain> -->
-
-
+    
     <router-view></router-view>
 
-    
   </div>
 </template>
 
