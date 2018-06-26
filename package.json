@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "amcharts3": "github:amcharts/amcharts3",
+    "jquery": "^3.3.1",
     "normalize.css": "^8.0.0",
     "vue": "^2.5.16",
     "vue-nav-tabs": "^0.5.7",

@@ -9,18 +9,24 @@
 
 <style>
 	.depth{
-		flex: 1 0;
+		flex: 1 0 437px;
+		display: flex;
+		flex-direction: column;
+
 	}
 	.depth__title{
 		padding: 0px 15px;
-		margin-bottom: 11px;
+		flex: 1 33px;
 	}
 	.depth__container{
 		background-color: #2c2c2c;
+		flex: 0 100%;
+		display: flex;
+		flex-direction: column;
 	}
 	#depth-chart{
 		width: 100%;
-		height: 500px;
+		flex: 1px;
 	}
 </style>
 

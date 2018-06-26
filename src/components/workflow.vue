@@ -22,7 +22,10 @@
 	        <depth></depth>
 	      </div>
 	      <aside class="aside-right">
-	        <history></history>
+	        <history
+	        	:pair="pair"
+	        	:from="from">
+	        </history>
 
 	        <forms 
 	          :pair="pair"

@@ -7,25 +7,7 @@
 	</div>
 </template>
 
-<style lang="scss">
-	.chart{
-		flex: 0 0 540px
-	}
-	.window__title{
-		margin-bottom: 11px;
-		padding: 0px 14px;
-	}
-	.chart__container{
-		background-color: #2c2c2c;
-		padding: 5px;
-		box-sizing: border-box;
-	}
-	#chartdiv {
-		width: 100%;
-		height: 480px;
-		box-sizing: border-box;
-	}
-</style>
+
 
 
 <script>
@@ -71,7 +53,7 @@
 					var volume = Math.round(Math.random() * (1000 + i)) + 100 + i;
 					var value = Math.round(Math.random() * (30) + 100);
 
-					vm.chartData[i] = ({
+					vm.chartData.push({
 						"date": newDate,
 						"open": open,
 						"close": close,
@@ -227,7 +209,33 @@
 				// 	"enabled": true
 				// }
 			});
-			console.log(chart.dataSet)
+
+			console.log(chart)
 		}
 	}
 </script>
+<style lang="scss">
+	.chart{
+		flex: 1 100%;
+		display: flex;
+		flex-direction: column;
+	}
+	.window__title{
+		padding: 0px 14px;
+		flex: 1 33px;
+	}
+	.chart__container{
+		background-color: #2c2c2c;
+		padding: 5px;
+		box-sizing: border-box;
+		flex: 0 100%;
+		display: flex;
+		flex-direction: column;
+	}
+	#chartdiv {
+		width: 100%;
+		height: 200px;
+		box-sizing: border-box;
+		flex: 1 100%;
+	}
+</style>

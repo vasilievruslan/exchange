@@ -18,7 +18,20 @@
 				</div>
 			</v-tab>
 			<v-tab title="PERSONAL H">
-
+				<div class="history__table">
+					<div  class="row history__header">
+						<div class="col">amount</div>
+						<div class="col">price</div>
+						<div class="col">time</div>
+					</div>
+					<div class="history__container">
+						<div v-for="item in histiryDataArr" class="row history__row">
+							<div class="col amount">{{item.amount}}</div>
+							<div class="col price">{{item.price}}</div>
+							<div class="col time">{{item.time}}</div>
+						</div>
+					</div>
+				</div>
 			</v-tab>
 		</vue-tabs>
 	</div>
@@ -26,11 +39,24 @@
 
 <script>
 
+
+
 	export default{
 		name: 'histiry',
 		data: function () {
 			return {
-
+				histiryData: [],
+				personalHistiryData: [],
+			}
+		},
+		props: {
+			pair: Object,
+			from: String,
+		},
+		watch: {
+			pair(){
+				this.tokenGetAddress = this.pair.tokens[0];
+				this.tokenGiveAddress = this.pair.tokens[1];
 			}
 		},
 		computed: {
@@ -47,6 +73,29 @@
 				}
 				return arr
 			}
+		},
+		methods: {
+			getTradeHistory(){
+				const vm = this;
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/historyTrade?tget=${vm.tokenGetAddress}&tgive=${this.tokenGiveAddress}&page=0`)
+				.then(res => {
+					vm.histiryData = res.body._items
+				}, err => {
+					console.log(err)
+				});
+			},
+			getPersonalTradeHistory(){
+				const vm = this;
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalHistoryTrade?tget=${vm.tokenGetAddress}&tgive=${this.tokenGiveAddress}&wallet=${vm.from}&page=0`)
+				.then(res => {
+					vm.personalHistiryData = res.body._items
+				}, err => {
+					console.log(err)
+				});
+			}
+		},
+		created(){
+			setInterval(this.getTradeHistory(), 10000);
 		}
 	}
 </script>
