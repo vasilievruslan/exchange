@@ -26,33 +26,6 @@
       return {
         from: '',
         contract: '',
-        test: 'test',
-
-        // header
-        bal: [{
-            amount: 'waiting', 
-            symbol: 'eos'
-          },
-          {
-            amount: 'waiting', 
-            symbol: 'eth'
-          }],
-
-        pairsList: [
-          {
-            name:'usd/btc',
-            path:'usd_btc'
-          },
-          {
-            name:'eos/eth',
-            path:'eos_eth'
-          },
-          {
-            name:'btc/eos',
-            path:'btc_eos'
-          },
-        ],
-
       }
     },
     components: {

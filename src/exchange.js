@@ -121,16 +121,29 @@ export default{
 	// },
 	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_) {
 		let str;
+		console.log('ok')
 		await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					console.log(hash);
 				} else {
 					console.log(err);
+					console.log('not ok')
 				}
 		});
 		return await str;
 	},
+	rsv: function (web3_, sig_) {
+		var sig_ = sig_.slice(2);
+		var r = '0x' + sig_.slice(0,64);
+		var s = '0x' + sig_.slice(64,128);
+		var v = web3_.utils.toDecimal('0x' + sig_.slice(128,130));
+		return {r:r, s:s, v:v};
+	},
+	orderHashEthJs: function (ethjs_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
+		return ethjs_.bufferToHex(ethjs_.sha256((contract_ + tokenGet_ + amountGet_ + tokenGive_ + amountGive_ + expires_ + nonce_).substr(2)));
+	},
+
 	cancelOrder: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_) {
 		let str;
 		await contract_.methods.cancelOrder(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_).send({from:from_},
@@ -153,13 +166,7 @@ export default{
 			});
 		return await obj;
 	},
-	rsv: function (sig_) {
-		var sig_ = sig_.slice(2);
-		var r = '0x' + sig_.slice(0,64);
-		var s = '0x' + sig_.slice(64,128);
-		var v = web3.utils.toDecimal('0x' + sig_.slice(128,130));
-		return {r:r, s:s, v:v};
-	},
+	
 	checkSig: async function (web3_, wallet_, hash_, sig_) {
 		let str;
 		var ecRecover = await web3_.eth.personal.ecRecover(hash_, sig_, 
@@ -172,8 +179,9 @@ export default{
 	orderHash: function (web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		return web3_.utils.soliditySha3(contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
 	},
-	getSign: function(web3_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
+	getSign: function(web3_, ethjs_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		var hash = this.orderHash(web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
+		console.log(hash);
 		console.log('getSign: ' + this.sign(web3_, from_, hash));
 		return this.sign(web3_, from_, hash);
 	},

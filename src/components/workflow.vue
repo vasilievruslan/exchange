@@ -13,6 +13,7 @@
 	        <orederbook
 	        	:pair="pair"
 	        	:from="from"
+	        	:contract="contract"
 	        ></orederbook>
 
 	        <chat></chat>
@@ -87,7 +88,7 @@
 		},
 		created(){
 			var vueSelf = this;
-			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.contractAddress);
+			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
 			web3.eth.getAccounts().then(res => vueSelf.from = res[0]);
 
 		},

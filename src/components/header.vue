@@ -1,7 +1,7 @@
 <template>
 	<header class="header">
 		<div class="header__cotainer --left">
-			<div class="header__logo"><img src="../assets/excaliburLogo.svg" alt="excalibur_alpha" class="header__logo-img"></div>
+			<div class="header__logo"><img src="../assets/excaliburLogo.png" alt="excalibur_alpha" class="header__logo-img"></div>
 			<div class="header__pairs">
 				<div v-on:click="dropdown = !dropdown" class="cur-pair">{{ pair.name }} <span><svg id="SVGDoc" width="14" height="7" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:avocode="https://avocode.com/" viewBox="0 0 14 7"><defs><path d="M283,20l-7,7l-7,-7v0" id="Path-0"/><clipPath id="ClipPath1016"><use xlink:href="#Path-0" fill="#ffffff"/></clipPath></defs><g transform="matrix(1,0,0,1,-269,-20)"><g><title>arrow</title><use xlink:href="#Path-0" fill-opacity="0" fill="#ffffff" stroke-linejoin="miter" stroke-linecap="butt" stroke-opacity="1" stroke="#aeaeae" stroke-miterlimit="50" stroke-width="2" clip-path="url(&quot;#ClipPath1016&quot;)"/></g></g></svg></span></div>
 
@@ -47,7 +47,7 @@
 					<img src="../assets/ledger.svg" alt="">
 				</div>
 				<div class="apps__item metamask__logo">
-					<img src="../assets/metaMask.svg" alt="">
+					<img :src="metamask" alt="">
 				</div>
 			</div>
 		</div>
@@ -70,6 +70,7 @@
 				dropdown: false,
 				amount1: 'waiting',
 				amount2: 'waiting',
+				metamask: 'img/metaMask.ce71a14b.svg',
 			}
 		},
 		computed: {
@@ -89,13 +90,19 @@
 	        	.then(res => vm.amount1 = res / 10**18)
 	        	exchange.balanceOf(vm.contract, vm.pair.tokens[1], vm.from)
 	        	.then(res => vm.amount2 = res / 10**18)
-	        	console.log('show');
 			},
 		},
 		watch:{
 			pair(){
 				this.showBalance();
 			},
+			from(){
+				if (web3.currentProvider == null || undefined) {
+					this.metamask = 'img/metaMask_disconect.d376e252.svg'
+				}else{
+					this.metamask = 'img/metaMask.ce71a14b.svg'
+				}
+			}
 		},
 
 		created() {

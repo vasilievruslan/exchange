@@ -12,7 +12,7 @@
 							<p class="input__title">PRICE</p>
 							<p class="input__contaner --price"><input v-model="buyPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
-						<p>TOTAL = <span>{{buyTotal}}</span> {{pair.symbols[1]}}</p>
+						<p>TOTAL = <span>{{buyTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
 							<span v-for="item in expires">
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
@@ -35,7 +35,7 @@
 							<p class="input__title">PRICE</p>
 							<p class="input__contaner --price"><input v-model="sellPrice" placeholder="" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
-						<p>TOTAL = <span>{{sellTotal}}</span> {{pair.symbols[0]}}</p>
+						<p>TOTAL = <span>{{sellTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
 							<span v-for="item in expires">
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
@@ -87,6 +87,7 @@
 	import provider from '../provider.js'
 	import exchange from '../exchange.js'
 	import settings from '../settings.json'
+	import ethjs from 'ethereumjs-util'
 
 	const web3 = provider.connectWeb3();
 
@@ -125,7 +126,7 @@
 				token1: this.pair.tokens[0],
 				token2: this.pair.tokens[1],
 
-				spender: settings.contractAddress,
+				spender: settings.exchangeAddress,
 			}
 		},
 		computed: {
@@ -194,18 +195,18 @@
 				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, vm.from, settings.contractAddress, vm.token1, vm.buyAmount * 10**18, vm.token2, vm.buyTotal * 10**18, 10000, nonce).then(res => vm.sign = res) 
+					await exchange.getSign(web3, ethjs, vm.from, settings.exchangeAddress, vm.token1.toLowerCase(), vm.buyAmount * 10**18, vm.token2.toLowerCase(), vm.buyTotal * 10**18, parseFloat(vm.picked), nonce).then(res => vm.sign = res) 
 
 					await vm.resource.save({
 						"maker": vm.from,
 						"tokenGet": vm.token1,
-						"amountGet": vm.buyAmount,
+						"amountGet": parseFloat(vm.buyAmount) * 10**18,
 						"tokenGive": vm.token2,
-						"amountGive": vm.buyTotal,
-						"expires": 10000,
-						"nonce": nonce,
+						"amountGive": parseFloat(vm.buyTotal) * 10**18,
+						"expires": parseFloat(vm.picked),
+						"nonce": parseFloat(nonce),
 						"sig": vm.sign
-					}).then(res => console.log(res))
+					}).then(res => console.log(res)).catch(err => console.log(err))
 				})()
 			},
 			postSellOrder(e){
@@ -213,24 +214,26 @@
 				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, vm.from, settings.contractAddress, vm.token2, vm.buyAmount * 10**18, vm.token1, vm.buyTotal * 10**18, 10000, nonce).then(res => vm.sign = res) 
+					await exchange.getSign(web3, ethjs, vm.from, settings.exchangeAddress, vm.token2, vm.sellAmount * 10**18, vm.token1, vm.buyTotal * 10**18, parseFloat(vm.picked), nonce).then(res => vm.sign = res)
+
 
 					await vm.resource.save({
 						"maker": vm.from,
 						"tokenGet": vm.token2,
-						"amountGet": vm.buyAmount,
+						"amountGet": vm.sellTotal * 10**18,
 						"tokenGive": vm.token1,
-						"amountGive": vm.buyTotal,
-						"expires": 10000,
-						"nonce": nonce,
+						"amountGive": vm.sellAmount * 10**18,
+						"expires": parseFloat(vm.picked),
+						"nonce": parseFloat(nonce),
 						"sig": vm.sign
-					}).then(res => console.log(res))
+					}).then(res => console.log(res)).catch(err => console.log(err))
 				})()
 			},
 
 		},
 		created(){
-			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.contractAddress);
+			console.log(ethjs)
+			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
 		},
 
 	}
