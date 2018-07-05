@@ -2,7 +2,7 @@
 	<div class="window orederbook">
 		<div v-if="buyFrom == true" class="orederbook__form">
 			<div class="orederbook__form-title">
-				<div>{{formData.orderType.toUpperCase()}}</div>
+				<div>{{order.orderType.toUpperCase()}}</div>
 				<div @click="closeForm" class="close-btn">
 					<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10">
 						<g transform="matrix(1,0,0,1,-351,-64)">
@@ -15,26 +15,25 @@
 				<div>ORDER</div>
 				<div class="orderbook-item flex-item">
 					<div class="orderbook-col">
-						<div class="od-title">TOTAL</div>
-						<div class="od-amount">{{formData.amountGet / 10**18}} {{pair.symbols[1].toUpperCase()}}</div>
-						<div class="od-title">PRICE</div>
-						<div class="od-amount">{{formData.price}}</div>
 						<div class="od-title">AMOUNT</div>
-						<div class="od-amount">{{formData.amountGive / 10**18}} {{pair.symbols[0].toUpperCase()}}</div>
+						<div class="od-amount">{{order.orderFills / 10**18}} {{pair.symbols[0].toUpperCase()}}</div>
+						<div class="od-title">PRICE</div>
+						<div class="od-amount">{{order.price}}</div>
 					</div>
 					<div class="orderbook-col">
 						<div class="od-title">EXPIRES</div>
-						<div class="od-amount">{{formData.expires}}</div>
+						<div class="od-amount">{{order.expires}}</div>
 						<div class="od-title">ADDRESS</div>
-						<div class="od-amount">{{formData.address}}</div>
+						<div class="od-amount">{{order.user}}</div>
 					</div>
 				</div>
 				<div class="orderbook-item">
-					<div>AMOUNT to {{formData.orderType}}</div>
-					<div class="input-container"><input v-model="formData.amountToBuy" type="number"><span>{{ pair.symbols[0].toUpperCase()}}</span></div>
+					<div>AMOUNT to {{order.orderType}}</div>
+					<div class="input-container"><input v-model="order.amount" type="number"><span>{{ pair.symbols[0].toUpperCase()}}</span></div>
+					<div class="total">TOTAL = <span class="--white">{{order.amount * order.price}}</span> {{pair.symbols[1].toUpperCase()}}</div>
 				</div>
 				<div class="orderbook-item">
-					<button class="buy-btn" @click="trade" :class="formData.orderType">{{formData.orderType.toUpperCase()}}</button>
+					<button class="buy-btn" @click="trade" :class="order.orderType">{{order.orderType.toUpperCase()}}</button>
 				</div>
 			</form>
 		</div>
@@ -48,9 +47,9 @@
 					</div>
 					<div class="orederbook__container">
 						<div class="orederbook__table buy">
-							<div v-for="(item, index) in listBuy" @click="doBuyOrder(index)" v-bind:data-hash="item.hash" class="buy row">
+							<div v-for="(item, index) in listBuy" @click="doOrder(index, 'sell')" v-bind:data-hash="item.hash" class="buy row">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{item.amountGet / 10**18}}</div>
+								<div class="col AMOUNT">{{item.orderFills / 10**18}}</div>
 								<div class="col PRICE">{{(item.amountGive / 10**18) / (item.amountGet / 10**18)}}</div>
 								<div class="col FIAT">$</div>
 							</div>
@@ -60,9 +59,9 @@
 							<div class="spread-val">0.00123</div>
 						</div>
 						<div class="orederbook__table sell">
-							<div v-for="(item, index) in listSell" @click="doSellOrder(index)" v-bind:data-hash="item.hash" class="sell row">
+							<div v-for="(item, index) in listSell" @click="doOrder(index, 'buy')" v-bind:data-hash="item.hash" class="sell row">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{item.amountGive / 10**18}}</div>
+								<div class="col AMOUNT">{{item.orderFills / 10**18}}</div>
 								<div class="col PRICE">{{item.amountGet / item.amountGive}}</div>
 								<div class="col FIAT">$</div>
 							</div>
@@ -112,20 +111,29 @@
 				tokenGiveAddress: this.pair.tokens[1],
 				personalOrders: null,
 				buyFrom: false,
-				formData: {
+				order: {
+					contract: this.contract,
+					from: this.from,
+					tokenGet: null,
 					amountGet: null,
-					price: null,
+					tokenGive: null,
 					amountGive: null,
 					expires: null,
-					address: null,
-					amountToBuy: null,
-					orderType: null,
-					tokenGet: null,
-					tokenGive: null,
 					nonce: null,
-					sig: null,
+					user: null,
+					v: null,
+					r: null,
+					s: null,
+					amount: null,
+					orderType: null,
+					price: null,
 				}
 			}
+		},
+		computed: {
+			resource(){
+				return this.$resource('https://exapi1.herokuapp.com/v0.1/{type}?tget={tokenGet}&tgive={tokenGive}&page=0')
+			},
 		},
 		props: {
 			pair: Object,
@@ -136,74 +144,59 @@
 			pair(){
 				this.tokenGetAddress = this.pair.tokens[0];
 				this.tokenGiveAddress = this.pair.tokens[1];
-			}
+			},
+
 		},
 		methods: {
-			doBuyOrder(i){
-					this.formData.amountGet = this.listBuy[i].amountGive;
-					this.formData.price = this.listBuy[i].amountGive / this.listBuy[i].amountGet;
-					this.formData.amountGive = this.listBuy[i].amountGet;
-					this.formData.expires = this.listBuy[i].expires;
-					this.formData.address = this.listBuy[i].maker;
-					this.formData.amountToBuy = this.listBuy[i].amountGet;
-					this.formData.orderType = 'sell';
-					this.formData.tokenGet = this.pair.tokens[1];
-					this.formData.tokenGive = this.pair.tokens[0];
-					this.formData.nonce = this.listBuy[i].nonce;
-					this.buyFrom = true;	
-					this.formData.sig = this.listBuy[i].sig
-			},
-			doSellOrder(i){
-					this.formData.price = this.listSell[i].amountGet / this.listSell[i].amountGive;
-					this.formData.expires = this.listSell[i].expires;
-					this.formData.address = this.listSell[i].maker;
-					this.formData.orderType = 'buy';
-					this.formData.tokenGet = this.pair.tokens[1];
-					this.formData.amountToBuy = this.listSell[i].amountGive / 10**18;
-					this.formData.tokenGive = this.pair.tokens[0];
-					this.formData.amountGet = this.listSell[i].amountGet;
-					this.formData.amountGive = this.listSell[i].amountGive;
-					this.buyFrom = true;
-					this.formData.nonce = this.listSell[i].nonce;
-					this.formData.sig = this.listSell[i].sig
+			doOrder(i, type){
+				var vm = this;
+				if (type == 'sell') {
+					var data = vm.listBuy[i]
+				}else{
+					var data = vm.listSell[i]
+				}
+
+				var rsv = exchange.rsv(web3, data.sig);
+				vm.order = {
+					orderFills: data.orderFills,
+					tokenGet: data.tokenGet,
+					amountGet: data.amountGet,
+					tokenGive: data.tokenGive,
+					amountGive: data.amountGive,
+					expires: data.expires,
+					nonce: data.nonce,
+					user: data.maker,
+					v: rsv.v,
+					r: rsv.r,
+					s: rsv.s,
+					amount: data.orderFills / 10**18,
+					orderType: type,
+					price: data.price,
+				}
+				vm.buyFrom = true;
 			},
 			trade(e){
 				e.preventDefault()
 				const vm = this;
-				(async function () {
-					var rsv = exchange.rsv(web3, vm.formData.sig);
-					var data = {
-						contract: vm.contract,
-						from: vm.from,
-						tokenGet: vm.formData.tokenGet,
-						amountGet: vm.formData.amountGet,
-						tokenGive: vm.formData.tokenGive,
-						amountGive: vm.formData.amountGive,
-						expires: vm.formData.expires,
-						nonce: vm.formData.nonce,
-						user: vm.formData.address,
-						v: rsv.v,
-						r: rsv.r,
-						s: rsv.s,
-						amount: vm.formData.amountToBuy,
-					}
-					console.log(data)
-					await exchange.trade(
-						data.contract, 
-						data.from,
-						data.tokenGet, 
-						data.amountGet, 
-						data.tokenGive, 
-						data.amountGive, 
-						data.expires, 
-						data.nonce, 
-						data.user, 
-						data.v, 
-						data.r, 
-						data.s, 
-						data.amount).then(res=> console.log(res), err=> console.log(err))
-				})()
-				vm.buyFrom = false;
+
+				console.log([vm.from.toLowerCase(), vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.order.amount * 10**18])
+				exchange.trade(
+					vm.contract, 
+					vm.from,
+					vm.order.tokenGet, 
+					vm.order.amountGet, 
+					vm.order.tokenGive, 
+					vm.order.amountGive, 
+					vm.order.expires, 
+					vm.order.nonce, 
+					vm.order.user, 
+					vm.order.v, 
+					vm.order.r, 
+					vm.order.s, 
+					vm.order.amount * 10**18).then(res => {
+						console.log(res)
+						vm.buyFrom = false;
+					}, err => console.log(err))
 			},
 			closeForm(){
 				this.buyFrom = false;
@@ -211,23 +204,20 @@
 			getOreders() {
 				const vm = this;
 
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/orders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(response => {
-					vm.listBuy = response.body._items
-				}, response => {
-					console.log(response)
-				});
-
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/orders?tget=${vm.tokenGiveAddress}&tgive=${vm.tokenGetAddress}&page=0`).then(response => {
-					vm.listSell = response.body._items
-				}, response => {
-					console.log(response)
-				});
+				this.resource.get({type: 'orders', tokenGet: vm.tokenGetAddress, tokenGive: vm.tokenGiveAddress}).then(
+					response => vm.listBuy = response.data._items, 
+					err => console.log(err)
+				);
+				this.resource.get({type: 'orders', tokenGet: vm.tokenGiveAddress, tokenGive: vm.tokenGetAddress}).then(
+					response => vm.listSell = response.data._items, 
+					err => console.log(err)
+				);
 			},
 			getPersonalOreders(){
 				const vm = this;
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalOrders?tget=${vm.tokenGetAddress}&tgive=${this.tokenGiveAddress}&maker=${vm.from}&page=0`)
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalOrders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&maker=${vm.from}&page=0`)
 				.then(res => {
-					vm.personalOrders = res.body._items
+					vm.personalOrders = res.data._items
 				}, err => {
 					console.log(err)
 				});
@@ -245,6 +235,12 @@
 </script>
 
 <style lang="scss">
+	.total{
+		margin: 25px 0;
+	}
+	.--white{
+		color: #fff;
+	}
 	.orderbook-col{
 		max-width: 50%;
 	}

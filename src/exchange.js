@@ -34,8 +34,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash;
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 
@@ -47,9 +48,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash;
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -60,18 +61,18 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash
-					console.log("aprove: " + hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		await contract_.methods.depositToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					console.log('deposit: ' + hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 					str = hash;
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str
@@ -81,10 +82,10 @@ export default{
 		await contract_.methods.withdrawToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 					str = hash;
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -95,9 +96,9 @@ export default{
 			function(err, res){
 				if (!err){
 					str = res;
-					// console.log(res);
+					// alert(res);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -108,9 +109,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash;
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -121,14 +122,14 @@ export default{
 	// },
 	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_) {
 		let str;
-		console.log('ok')
+		alert('ok')
 		await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
-					console.log('not ok')
+					alert(err);
+					alert('not ok')
 				}
 		});
 		return await str;
@@ -150,9 +151,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -162,7 +163,7 @@ export default{
 		await web3_.eth.personal.sign(hash_, from_, 
 			function(err, res) {
 				obj = res;
-				console.log('sign: ' + res)
+				alert('sign: ' + res)
 			});
 		return await obj;
 	},
@@ -171,7 +172,7 @@ export default{
 		let str;
 		var ecRecover = await web3_.eth.personal.ecRecover(hash_, sig_, 
 			function(err, res) {
-				console.log('Test: ' + res);
+				alert('Test: ' + res);
 				str = res;
 		});
 		return await str;
@@ -179,10 +180,10 @@ export default{
 	orderHash: function (web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		return web3_.utils.soliditySha3(contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
 	},
-	getSign: function(web3_, ethjs_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
+	getSign: function(web3_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		var hash = this.orderHash(web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
-		console.log(hash);
-		console.log('getSign: ' + this.sign(web3_, from_, hash));
+		alert('getSign: ' + this.sign(web3_, from_, hash));
+		alert(`hash: ${hash}`)
 		return this.sign(web3_, from_, hash);
 	},
 	approve: async function (contract_, from_, spender_, value_) {
@@ -191,9 +192,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -204,9 +205,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash
-					console.log(hash);
+					alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					console.log(err);
+					alert(err);
 				}
 		});
 		return await str;
@@ -217,10 +218,10 @@ export default{
 			function(error, event){
 				if (!error) {
 					str = event
-					console.log(event.transactionHash);
-					console.log('==============');
+					alert(event.transactionHash);
+					alert('==============');
 				} else {
-					console.log(error);
+					alert(error);
 				}
 		});
 		return await str;

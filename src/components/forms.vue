@@ -100,15 +100,15 @@
 				expires: [
 					{
 						title: '1H',
-						blockAmount: 1232132
+						blockAmount: 8839118
 					},
 					{
 						title: '1D',
-						blockAmount: 6542284
+						blockAmount: 8839119
 					},
 					{
 						title: '1W',
-						blockAmount: 9875456
+						blockAmount: 8839120
 					}
 				],
 				buyAmount: 0,
@@ -121,7 +121,7 @@
 				tokenContarct: null,
 				hash: null,
 				sign: null,
-				picked: 1232132,
+				picked: 8839118,
 
 				token1: this.pair.tokens[0],
 				token2: this.pair.tokens[1],
@@ -172,7 +172,7 @@
 				const vueSelf = this
 				e.preventDefault();
 				if (this.depositToken == '0x0000000000000000000000000000000000000000') {
-					exchange.deposit(this.contract, this.from, this.depositAmount * 10**18).then(res => console.log(res), err => console.log(err))
+					exchange.deposit(this.contract, this.from, this.depositAmount * 10**18).then(res => alert(res), err => console.log(err))
 				}else{
 					(async function () {
 						const contract = exchange.initContract(web3, settings.tokenAbi, vueSelf.depositToken)
@@ -195,13 +195,14 @@
 				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, ethjs, vm.from, settings.exchangeAddress, vm.token1.toLowerCase(), vm.buyAmount * 10**18, vm.token2.toLowerCase(), vm.buyTotal * 10**18, parseFloat(vm.picked), nonce).then(res => vm.sign = res) 
+					await exchange.getSign(web3, vm.from, settings.exchangeAddress, vm.token1.toLowerCase(), vm.buyAmount * 10**18, vm.token2.toLowerCase(), vm.buyTotal * 10**18, parseFloat(vm.picked), nonce)
+					.then(res => vm.sign = res) 
 
 					await vm.resource.save({
-						"maker": vm.from,
-						"tokenGet": vm.token1,
+						"maker": vm.from.toLowerCase(),
+						"tokenGet": vm.token1.toLowerCase(),
 						"amountGet": parseFloat(vm.buyAmount) * 10**18,
-						"tokenGive": vm.token2,
+						"tokenGive": vm.token2.toLowerCase(),
 						"amountGive": parseFloat(vm.buyTotal) * 10**18,
 						"expires": parseFloat(vm.picked),
 						"nonce": parseFloat(nonce),
@@ -214,15 +215,15 @@
 				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, ethjs, vm.from, settings.exchangeAddress, vm.token2, vm.sellAmount * 10**18, vm.token1, vm.buyTotal * 10**18, parseFloat(vm.picked), nonce).then(res => vm.sign = res)
-
-
+					await exchange.getSign(web3, vm.from, settings.exchangeAddress, vm.token2, vm.sellTotal * 10**18, vm.token1.toLowerCase(), vm.sellAmount * 10**18, parseFloat(vm.picked), nonce)
+					.then(res => vm.sign = res)
+					
 					await vm.resource.save({
-						"maker": vm.from,
-						"tokenGet": vm.token2,
-						"amountGet": vm.sellTotal * 10**18,
-						"tokenGive": vm.token1,
-						"amountGive": vm.sellAmount * 10**18,
+						"maker": vm.from.toLowerCase(),
+						"tokenGet": vm.token2.toLowerCase(),
+						"amountGet": parseFloat(vm.sellTotal) * 10**18,
+						"tokenGive": vm.token1.toLowerCase(),
+						"amountGive": parseFloat(vm.sellAmount) * 10**18,
 						"expires": parseFloat(vm.picked),
 						"nonce": parseFloat(nonce),
 						"sig": vm.sign

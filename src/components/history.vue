@@ -9,11 +9,11 @@
 						<div class="col">time</div>
 					</div>
 					<div class="history__container">
-						<div v-for="item in histiryDataArr" class="row history__row">
-							<div class="col amount">{{item.amount}}</div>
-							<div class="col price">{{item.price}}</div>
-							<div class="col time">{{item.time}}</div>
-						</div>
+						<a target="_blank" :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in historyData" class="row history__row">
+							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
+							<div class="col price">{{(item.amountGet / item.amountGive).toFixed(4)}}</div>
+							<div class="col time">{{`${new Date(item.date).getUTCMonth()}/${new Date(item.date).getUTCDay()} ${new Date(item.date).getUTCHours()}:${new Date(item.date).getUTCMinutes()}`}}</div>
+						</a>
 					</div>
 				</div>
 			</v-tab>
@@ -25,11 +25,11 @@
 						<div class="col">time</div>
 					</div>
 					<div class="history__container">
-						<div v-for="item in histiryDataArr" class="row history__row">
-							<div class="col amount">{{item.amount}}</div>
-							<div class="col price">{{item.price}}</div>
-							<div class="col time">{{item.time}}</div>
-						</div>
+						<a :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in personalHistoryData" :class="item.orderType" class="row history__row">
+							<div class="col amount">{{item.amountGet / 10**18}}</div>
+							<div class="col price">{{(item.amountGet / item.amountGive).toFixed(4)}}</div>
+							<div class="col time">{{`${new Date(item.date).getUTCMonth()}/${new Date(item.date).getUTCDay()} ${new Date(item.date).getUTCHours()}:${new Date(item.date).getUTCMinutes()}`}}</div>
+						</a>
 					</div>
 				</div>
 			</v-tab>
@@ -45,8 +45,10 @@
 		name: 'histiry',
 		data: function () {
 			return {
-				histiryData: [],
-				personalHistiryData: [],
+				historyData: [],
+				personalHistoryData: [],
+				tokenGetAddress: this.pair.tokens[0],
+				tokenGiveAddress: this.pair.tokens[1],
 			}
 		},
 		props: {
@@ -57,45 +59,50 @@
 			pair(){
 				this.tokenGetAddress = this.pair.tokens[0];
 				this.tokenGiveAddress = this.pair.tokens[1];
-			}
-		},
-		computed: {
-			histiryDataArr: function () {
-				var arr = []
-				for (var i = 40; i >= 0; i--) {
-
-					arr[i] = {
-						amount: Math.random().toFixed(5),
-						price: Math.random().toFixed(5),
-						time: new Date().toLocaleTimeString(),
-					}
-
-				}
-				return arr
-			}
+			},
 		},
 		methods: {
 			getTradeHistory(){
 				const vm = this;
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/historyTrade?tget=${vm.tokenGetAddress}&tgive=${this.tokenGiveAddress}&page=0`)
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/historyTrade?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`)
 				.then(res => {
-					vm.histiryData = res.body._items
+					var data = res.body._items;
+					data.forEach(function(element){
+						if(element.tokenGet == vm.tokenGetAddress){
+							element.orderType = 'buy'
+						}else{
+							element.orderType = 'sell'
+						}
+					});
+					vm.historyData = data
 				}, err => {
 					console.log(err)
 				});
 			},
 			getPersonalTradeHistory(){
 				const vm = this;
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalHistoryTrade?tget=${vm.tokenGetAddress}&tgive=${this.tokenGiveAddress}&wallet=${vm.from}&page=0`)
+				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalHistoryTrade?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&wallet=${vm.from}&page=0`)
 				.then(res => {
-					vm.personalHistiryData = res.body._items
+					var data = res.body._items;
+					data.forEach(function(element){
+						if(element.tokenGet == vm.tokenGetAddress){
+							element.orderType = 'buy'
+						}else{
+							element.orderType = 'sell'
+						}
+					});
+					vm.personalHistoryData = data
 				}, err => {
 					console.log(err)
 				});
 			}
 		},
 		created(){
-			setInterval(this.getTradeHistory(), 10000);
+			var vm = this;
+			setInterval(function(){
+				vm.getTradeHistory();
+				vm.getPersonalTradeHistory();
+			}, 8000);
 		}
 	}
 </script>
@@ -153,12 +160,18 @@
 	}
 	.history__row{
 		font-weight: 400;
-		margin: 4px 0px;
+		padding: 4px 0px;
 		font-size: 14px;
 		width: 100%;
+		color: #fff;
+		text-decoration: none;
+
+		&:hover{
+			background-color: #242323;
+		}
 
 		&:last-child{
-			padding-bottom: 17px;
+			margin-bottom: 17px;
 		}
 	}
 </style>

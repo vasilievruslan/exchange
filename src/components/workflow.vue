@@ -19,7 +19,7 @@
 	        <chat></chat>
 	      </aside>
 	      <div class="charts">
-	        <chart></chart>
+	        <chart :pair="pair"></chart>
 	        <depth></depth>
 	      </div>
 	      <aside class="aside-right">

@@ -845,7 +845,7 @@
 				"name":"eth/erc20",
 				"path":"eth_erc20",
 				"symbols": ["eth", "erc20"],
-				"tokens": ["0x0000000000000000000000000000000000000000", "0x5101c72c300af763e95a1f94107d7d4da0f014f4"],
+				"tokens": ["0x0000000000000000000000000000000000000000", "0xF022931dfcc5FaB6E9D13c68d9De55664be1c020"],
 				"amount": ["waiting", "waiting"]
 			},{
 				"name":"eth/omg",

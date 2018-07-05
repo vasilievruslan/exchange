@@ -47,7 +47,7 @@
 					<img src="../assets/ledger.svg" alt="">
 				</div>
 				<div class="apps__item metamask__logo">
-					<img :src="metamask" alt="">
+					<i class="ico" :class="metamask" alt=""></i>
 				</div>
 			</div>
 		</div>
@@ -70,7 +70,7 @@
 				dropdown: false,
 				amount1: 'waiting',
 				amount2: 'waiting',
-				metamask: 'img/metaMask.ce71a14b.svg',
+				metamask: 'metamask',
 			}
 		},
 		computed: {
@@ -97,11 +97,7 @@
 				this.showBalance();
 			},
 			from(){
-				if (web3.currentProvider == null || undefined) {
-					this.metamask = 'img/metaMask_disconect.d376e252.svg'
-				}else{
-					this.metamask = 'img/metaMask.ce71a14b.svg'
-				}
+				
 			}
 		},
 
@@ -110,11 +106,40 @@
 			setInterval(function () {
 				vm.showBalance();
 			}, 5000)
+
+			// if (web3.currentProvider == null || undefined) {
+			// 	this.metamask = 'metamask-disconect'
+			// }else{
+			// 	this.metamask = 'metamask'
+			// }
+
+			if (typeof web3 !== 'undefined') {
+			// Use Mist/MetaMask's provider
+				this.metamask = 'metamask'
+			} else {
+				console.log('No web3? You should consider trying MetaMask!')
+			// fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+				this.metamask = 'metamask-disconect'
+			}
 		}
 	}
 </script>
 
 <style lang="scss">
+	i.ico{
+		display: inline-block;
+		background-size: cover;
+		background-repeat: no-repeat;
+		width: 28px;
+		height: 25px;
+		&.metamask{
+			background-image: url(../assets/metaMask.svg);
+		}
+		&.metamask-disconect{
+			background-image: url(../assets/metaMask_disconect.svg)
+		}
+	}
+
 	.header{
 	    position: absolute;
 		width: 100vw;

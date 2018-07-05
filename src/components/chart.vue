@@ -8,6 +8,9 @@
 </template>
 
 <script>
+	// import AmCharts from 'amcharts3'
+	// import AmSerial from 'amcharts3/amcharts/serial'
+
 	export default{
 		name: 'chart',
 		data(){
@@ -15,10 +18,177 @@
 				chartData: [],
 			}
 		},
+		props: {
+			pair: Object,
+		},
+		methods: {
+			getChartData(){
+				var vm = this
+				vm.$http.get(`https://exapi1.herokuapp.com/v0.1/priceChart?page=0`).then(res => {
+					var data = res.data._items
+					data.forEach(function(element){
+						element.volume = 1
+						element.value = 1
+						var newDate = new Date(element.date)
+						element.date = newDate;
+					})
+					vm.chartData = data;
+
+					var chart = AmCharts.makeChart("chartdiv", {
+						"type": "stock",
+						"theme": "black",
+						"useUTC": true,
+						"dataSets": [{
+							"fieldMappings": [{
+								"fromField": "open",
+								"toField": "open"
+							}, {
+								"fromField": "close",
+								"toField": "close"
+							}, {
+								"fromField": "max",
+								"toField": "high"
+							}, {
+								"fromField": "min",
+								"toField": "low"
+							}, {
+								"fromField": "volume",
+								"toField": "volume"
+							}, {
+								"fromField": "value",
+								"toField": "value"
+							}],
+							"color": "#fff",
+							"dataProvider": vm.chartData,
+							"title": vm.pair.name.toUpperCase(),
+							"categoryField": "date"
+						}, {
+							"fieldMappings": [{
+								"fromField": "value",
+								"toField": "value"
+							}]
+						}],
+
+
+						"panels": [{
+							"title": "Value",
+							"showCategoryAxis": false,
+							"percentHeight": 70,
+							"valueAxes": [{
+								"labelsEnabled": false,
+								"id": "v1",
+								"dashLength": 5
+							}],
+
+							"categoryAxis": {
+								"parseDates": false,
+								"dashLength": 5
+							},
+
+							"stockGraphs": [{
+								"type": "candlestick",
+								"id": "g1",
+								"openField": "open",
+								"closeField": "close",
+								"highField": "high",
+								"lowField": "low",
+								"valueField": "close",
+								"lineColor": "#0be881",
+								"fillColors": "#0be881",
+								"negativeLineColor": "#ff5e57",
+								"negativeFillColors": "#ff5e57",
+								"fillAlphas": 1,
+								"useDataSetColors": false,
+								"comparable": true,
+								"compareField": "value",
+								"showBalloon": true,
+								"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
+								"proCandlesticks": true
+							}],
+
+							"stockLegend": {
+								"valueTextRegular": undefined,
+								"periodValueTextComparing": "[[percents.value.close]]%"
+							}
+							}, 
+							{
+								"title": "Volume",
+								"percentHeight": 30,
+								"marginTop": 1,
+								"showCategoryAxis": true,
+								"valueAxes": [{
+									"labelsEnabled": false,
+									"dashLength": 5
+								}],
+
+								"categoryAxis": {
+									"dashLength": 5
+								},
+
+								"stockGraphs": [{
+									"valueField": "volume",
+									"type": "column",
+									"showBalloon": false,
+									"fillAlphas": 1
+								}],
+
+								"stockLegend": {
+									"markerType": "none",
+									"markerSize": 0,
+									"labelText": "",
+									"periodValueTextRegular": "[[value.close]]"
+								}
+							}
+						],
+
+						"chartScrollbarSettings": {
+							"graph": "g1",
+							"graphType": "line",
+							"usePeriod": "NN"
+						},
+
+						"chartCursorSettings": {
+							"valueLineBalloonEnabled": true,
+							"valueLineEnabled": true
+						},
+
+						"periodSelector": {
+							"dateFormat": "NN-HH-DD",
+							"position": "bottom",
+							"periods": [{
+								"period": "NN",
+								"count": 15,
+								"label": "15 min"
+							}, {
+								"period": "HH",
+								"selected": true,
+								"count": 1,
+								"label": "1 hour"
+							}, {
+								"period": "DD",
+								"count": 1,
+								"label": "1 day"
+							}, {
+								"period": "YTD",
+								"label": "YTD"
+							}, {
+								"period": "MAX",
+								"label": "MAX"
+							}]
+						}
+					});
+					
+					console.log(data)
+				})
+			}
+		},
 		created(){
 
+
+
 			let vm = this;
-			generateChartData();
+			// generateChartData();
+			vm.getChartData();
 
 			function generateChartData() {
 				var firstDate = new Date();
@@ -62,152 +232,152 @@
 				}
 			}
 
-			var chart = AmCharts.makeChart("chartdiv", {
-				"type": "stock",
-				"theme": "black",
-				"dataSets": [{
-					"fieldMappings": [{
-						"fromField": "open",
-						"toField": "open"
-					}, {
-						"fromField": "close",
-						"toField": "close"
-					}, {
-						"fromField": "high",
-						"toField": "high"
-					}, {
-						"fromField": "low",
-						"toField": "low"
-					}, {
-						"fromField": "volume",
-						"toField": "volume"
-					}, {
-						"fromField": "value",
-						"toField": "value"
-					}],
-					"color": "#fff",
-					"dataProvider": vm.chartData,
-					"title": "West Stock",
-					"categoryField": "date"
-				}, {
-					"fieldMappings": [{
-						"fromField": "value",
-						"toField": "value"
-					}]
-				}],
+			// var chart = AmCharts.makeChart("chartdiv", {
+			// 	"type": "stock",
+			// 	"theme": "black",
+			// 	"dataSets": [{
+			// 		"fieldMappings": [{
+			// 			"fromField": "open",
+			// 			"toField": "open"
+			// 		}, {
+			// 			"fromField": "close",
+			// 			"toField": "close"
+			// 		}, {
+			// 			"fromField": "high",
+			// 			"toField": "high"
+			// 		}, {
+			// 			"fromField": "low",
+			// 			"toField": "low"
+			// 		}, {
+			// 			"fromField": "volume",
+			// 			"toField": "volume"
+			// 		}, {
+			// 			"fromField": "value",
+			// 			"toField": "value"
+			// 		}],
+			// 		"color": "#fff",
+			// 		"dataProvider": vm.chartData,
+			// 		"title": vm.pair.name.toUpperCase(),
+			// 		"categoryField": "date"
+			// 	}, {
+			// 		"fieldMappings": [{
+			// 			"fromField": "value",
+			// 			"toField": "value"
+			// 		}]
+			// 	}],
 
 
-				"panels": [{
-						"title": "Value",
-						"showCategoryAxis": false,
-						"percentHeight": 70,
-						"valueAxes": [{
-							"labelsEnabled": false,
-							"id": "v1",
-							"dashLength": 5
-						}],
+			// 	"panels": [{
+			// 			"title": "Value",
+			// 			"showCategoryAxis": false,
+			// 			"percentHeight": 70,
+			// 			"valueAxes": [{
+			// 				"labelsEnabled": false,
+			// 				"id": "v1",
+			// 				"dashLength": 5
+			// 			}],
 
-						"categoryAxis": {
-							"dashLength": 5
-						},
+			// 			"categoryAxis": {
+			// 				"dashLength": 5
+			// 			},
 
-						"stockGraphs": [{
-							"type": "candlestick",
-							"id": "g1",
-							"openField": "open",
-							"closeField": "close",
-							"highField": "high",
-							"lowField": "low",
-							"valueField": "close",
-							"lineColor": "#0be881",
-							"fillColors": "#0be881",
-							"negativeLineColor": "#ff5e57",
-							"negativeFillColors": "#ff5e57",
-							"fillAlphas": 1,
-							"useDataSetColors": false,
-							"comparable": true,
-							"compareField": "value",
-							"showBalloon": true,
-							"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
-							"proCandlesticks": true
-						}],
+			// 			"stockGraphs": [{
+			// 				"type": "candlestick",
+			// 				"id": "g1",
+			// 				"openField": "open",
+			// 				"closeField": "close",
+			// 				"highField": "high",
+			// 				"lowField": "low",
+			// 				"valueField": "close",
+			// 				"lineColor": "#0be881",
+			// 				"fillColors": "#0be881",
+			// 				"negativeLineColor": "#ff5e57",
+			// 				"negativeFillColors": "#ff5e57",
+			// 				"fillAlphas": 1,
+			// 				"useDataSetColors": false,
+			// 				"comparable": true,
+			// 				"compareField": "value",
+			// 				"showBalloon": true,
+			// 				"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
+			// 				"proCandlesticks": true
+			// 			}],
 
-						"stockLegend": {
-							"valueTextRegular": undefined,
-							"periodValueTextComparing": "[[percents.value.close]]%"
-						}
-					},
+			// 			"stockLegend": {
+			// 				"valueTextRegular": undefined,
+			// 				"periodValueTextComparing": "[[percents.value.close]]%"
+			// 			}
+			// 		},
 
-					{
-						"title": "Volume",
-						"percentHeight": 30,
-						"marginTop": 1,
-						"showCategoryAxis": true,
-						"valueAxes": [{
-							"labelsEnabled": false,
-							"dashLength": 5
-						}],
+			// 		{
+			// 			"title": "Volume",
+			// 			"percentHeight": 30,
+			// 			"marginTop": 1,
+			// 			"showCategoryAxis": true,
+			// 			"valueAxes": [{
+			// 				"labelsEnabled": false,
+			// 				"dashLength": 5
+			// 			}],
 
-						"categoryAxis": {
-							"dashLength": 5
-						},
+			// 			"categoryAxis": {
+			// 				"dashLength": 5
+			// 			},
 
-						"stockGraphs": [{
-							"valueField": "volume",
-							"type": "column",
-							"showBalloon": false,
-							"fillAlphas": 1
-						}],
+			// 			"stockGraphs": [{
+			// 				"valueField": "volume",
+			// 				"type": "column",
+			// 				"showBalloon": false,
+			// 				"fillAlphas": 1
+			// 			}],
 
-						"stockLegend": {
-							"markerType": "none",
-							"markerSize": 0,
-							"labelText": "",
-							"periodValueTextRegular": "[[value.close]]"
-						}
-					}
-				],
+			// 			"stockLegend": {
+			// 				"markerType": "none",
+			// 				"markerSize": 0,
+			// 				"labelText": "",
+			// 				"periodValueTextRegular": "[[value.close]]"
+			// 			}
+			// 		}
+			// 	],
 
-				"chartScrollbarSettings": {
-					"graph": "g1",
-					"graphType": "line",
-					"usePeriod": "WW"
-				},
+			// 	"chartScrollbarSettings": {
+			// 		"graph": "g1",
+			// 		"graphType": "line",
+			// 		"usePeriod": "WW"
+			// 	},
 
-				"chartCursorSettings": {
-					"valueLineBalloonEnabled": true,
-					"valueLineEnabled": true
-				},
+			// 	"chartCursorSettings": {
+			// 		"valueLineBalloonEnabled": true,
+			// 		"valueLineEnabled": true
+			// 	},
 
-				"periodSelector": {
-					"position": "bottom",
-					"periods": [{
-						"period": "DD",
-						"count": 10,
-						"label": "10 days"
-					}, {
-						"period": "MM",
-						"selected": true,
-						"count": 1,
-						"label": "1 month"
-					}, {
-						"period": "YYYY",
-						"count": 1,
-						"label": "1 year"
-					}, {
-						"period": "YTD",
-						"label": "YTD"
-					}, {
-						"period": "MAX",
-						"label": "MAX"
-					}]
-				},
-				// "export": {
-				// 	"enabled": true
-				// }
-			});
+			// 	"periodSelector": {
+			// 		"position": "bottom",
+			// 		"periods": [{
+			// 			"period": "DD",
+			// 			"count": 10,
+			// 			"label": "10 days"
+			// 		}, {
+			// 			"period": "MM",
+			// 			"selected": true,
+			// 			"count": 1,
+			// 			"label": "1 month"
+			// 		}, {
+			// 			"period": "YYYY",
+			// 			"count": 1,
+			// 			"label": "1 year"
+			// 		}, {
+			// 			"period": "YTD",
+			// 			"label": "YTD"
+			// 		}, {
+			// 			"period": "MAX",
+			// 			"label": "MAX"
+			// 		}]
+			// 	},
+			// 	// "export": {
+			// 	// 	"enabled": true
+			// 	// }
+			// });
 
-			console.log(chart)
+			// console.log(chart)
 		}
 	}
 </script>
