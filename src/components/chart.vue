@@ -38,78 +38,86 @@
 						"type": "stock",
 						"theme": "black",
 						"useUTC": true,
-						"dataSets": [{
-							"fieldMappings": [{
-								"fromField": "open",
-								"toField": "open"
+						"dataSets": [
+							{
+								"fieldMappings": [{
+									"fromField": "open",
+									"toField": "open"
+								}, {
+									"fromField": "close",
+									"toField": "close"
+								}, {
+									"fromField": "max",
+									"toField": "high"
+								}, {
+									"fromField": "min",
+									"toField": "low"
+								}, {
+									"fromField": "volume",
+									"toField": "volume"
+								}, {
+									"fromField": "value",
+									"toField": "value"
+								}],
+								"color": "#fff",
+								"dataProvider": vm.chartData,
+								"title": vm.pair.name.toUpperCase(),
+								"categoryField": "date"
 							}, {
-								"fromField": "close",
-								"toField": "close"
-							}, {
-								"fromField": "max",
-								"toField": "high"
-							}, {
-								"fromField": "min",
-								"toField": "low"
-							}, {
-								"fromField": "volume",
-								"toField": "volume"
-							}, {
-								"fromField": "value",
-								"toField": "value"
-							}],
-							"color": "#fff",
-							"dataProvider": vm.chartData,
-							"title": vm.pair.name.toUpperCase(),
-							"categoryField": "date"
-						}, {
-							"fieldMappings": [{
-								"fromField": "value",
-								"toField": "value"
-							}]
-						}],
+								"fieldMappings": [{
+									"fromField": "value",
+									"toField": "value"
+								}]
+							}
+						],
 
 
-						"panels": [{
-							"title": "Value",
-							"showCategoryAxis": false,
-							"percentHeight": 70,
-							"valueAxes": [{
-								"labelsEnabled": false,
-								"id": "v1",
-								"dashLength": 5
-							}],
+						"panels": [
+							{
+								"title": "Value",
+								"showCategoryAxis": false,
+								"percentHeight": 70,
+								"valueAxes": [{
+									"labelsEnabled": false,
+									"id": "v1",
+									"dashLength": 5
+								}
+							],
 
 							"categoryAxis": {
-								"parseDates": false,
-								"dashLength": 5
+								"parseDates": true,
+								"dashLength": 5,
+								"minPeriod": "mm",
+								"parseDates": true
 							},
 
-							"stockGraphs": [{
-								"type": "candlestick",
-								"id": "g1",
-								"openField": "open",
-								"closeField": "close",
-								"highField": "high",
-								"lowField": "low",
-								"valueField": "close",
-								"lineColor": "#0be881",
-								"fillColors": "#0be881",
-								"negativeLineColor": "#ff5e57",
-								"negativeFillColors": "#ff5e57",
-								"fillAlphas": 1,
-								"useDataSetColors": false,
-								"comparable": true,
-								"compareField": "value",
-								"showBalloon": true,
-								"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
-								"proCandlesticks": true
-							}],
+							"stockGraphs": [
+								{
+									"type": "candlestick",
+									"id": "g1",
+									"openField": "open",
+									"closeField": "close",
+									"highField": "high",
+									"lowField": "low",
+									"valueField": "close",
+									"lineColor": "#0be881",
+									"fillColors": "#0be881",
+									"negativeLineColor": "#ff5e57",
+									"negativeFillColors": "#ff5e57",
+									"fillAlphas": 1,
+									"useDataSetColors": false,
+									"comparable": true,
+									"compareField": "value",
+									"showBalloon": true,
+									"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
+									"proCandlesticks": true
+								}
+							],
 
 							"stockLegend": {
 								"valueTextRegular": undefined,
 								"periodValueTextComparing": "[[percents.value.close]]%"
-							}
+								}
 							}, 
 							{
 								"title": "Volume",
@@ -144,7 +152,11 @@
 						"chartScrollbarSettings": {
 							"graph": "g1",
 							"graphType": "line",
-							"usePeriod": "NN"
+							"usePeriod": "HH"
+						},
+
+						"categoryAxesSettings": {
+							"minPeriod": "10mm"
 						},
 
 						"chartCursorSettings": {
@@ -156,17 +168,17 @@
 							"dateFormat": "NN-HH-DD",
 							"position": "bottom",
 							"periods": [{
-								"period": "NN",
-								"count": 15,
-								"label": "15 min"
+								"period": "10mm",
+								"count": 3,
+								"label": "15 min",
+								"selected": true
 							}, {
 								"period": "HH",
-								"selected": true,
-								"count": 1,
+								"count": 1000,
 								"label": "1 hour"
 							}, {
-								"period": "DD",
-								"count": 1,
+								"period": "HH",
+								"count": 10000,
 								"label": "1 day"
 							}, {
 								"period": "YTD",
@@ -178,7 +190,7 @@
 						}
 					});
 					
-					console.log(data)
+					console.log(chart)
 				})
 			}
 		},

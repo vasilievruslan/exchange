@@ -9,9 +9,9 @@
 						<div class="col">time</div>
 					</div>
 					<div class="history__container">
-						<a target="_blank" :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in historyData" class="row history__row">
+						<a target="_blank" :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in historyData" :class="item.orderType" class="row history__row">
 							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
-							<div class="col price">{{(item.amountGet / item.amountGive).toFixed(4)}}</div>
+							<div class="col price"><span>{{(item.amountGet / item.amountGive).toFixed(4)}}</span></div>
 							<div class="col time">{{`${new Date(item.date).getUTCMonth()}/${new Date(item.date).getUTCDay()} ${new Date(item.date).getUTCHours()}:${new Date(item.date).getUTCMinutes()}`}}</div>
 						</a>
 					</div>
@@ -26,8 +26,8 @@
 					</div>
 					<div class="history__container">
 						<a :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in personalHistoryData" :class="item.orderType" class="row history__row">
-							<div class="col amount">{{item.amountGet / 10**18}}</div>
-							<div class="col price">{{(item.amountGet / item.amountGive).toFixed(4)}}</div>
+							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
+							<div class="col price"><span>{{(item.amountGet / item.amountGive).toFixed(4)}}</span></div>
 							<div class="col time">{{`${new Date(item.date).getUTCMonth()}/${new Date(item.date).getUTCDay()} ${new Date(item.date).getUTCHours()}:${new Date(item.date).getUTCMinutes()}`}}</div>
 						</a>
 					</div>
@@ -108,6 +108,36 @@
 </script>
 
 <style lang="scss">
+
+	.history__row{
+		.price{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		&.buy{
+			.price:after{
+				margin: 0px 5px;
+				content: '';
+				width: 0;
+				height: 0;
+				border-style: solid;
+				border-width: 0 7px 7px 7px;
+				border-color: transparent transparent #0be881 transparent;
+			}
+		}
+		&.sell{
+			.price:after{
+				margin: 0px 5px;
+				content: '';
+				width: 0;
+				height: 0;
+				border-style: solid;
+				border-width: 7px 7px 0 7px;
+				border-color: #ff5e57 transparent transparent transparent;
+			}
+		}
+	} 
 	.history{
 		width: 378px;
 		height: 540px;
