@@ -18,7 +18,7 @@
 						<div class="od-title">AMOUNT</div>
 						<div class="od-amount">{{order.orderFills / 10**18}} {{pair.symbols[0].toUpperCase()}}</div>
 						<div class="od-title">PRICE</div>
-						<div class="od-amount">{{order.price}}</div>
+						<div class="od-amount">{{(order.price).toFixed(4)}}</div>
 					</div>
 					<div class="orderbook-col">
 						<div class="od-title">EXPIRES</div>
@@ -30,7 +30,7 @@
 				<div class="orderbook-item">
 					<div>AMOUNT to {{order.orderType}}</div>
 					<div class="input-container"><input v-model="order.amount" type="number"><span>{{ pair.symbols[0].toUpperCase()}}</span></div>
-					<div class="total">TOTAL = <span class="--white">{{order.amount * order.price}}</span> {{pair.symbols[1].toUpperCase()}}</div>
+					<div class="total">TOTAL = <span class="--white">{{(order.amount * order.price).toFixed(4)}}</span> {{pair.symbols[1].toUpperCase()}}</div>
 				</div>
 				<div class="orderbook-item">
 					<button class="buy-btn" @click="trade" :class="order.orderType">{{order.orderType.toUpperCase()}}</button>
@@ -49,8 +49,8 @@
 						<div class="orederbook__table buy">
 							<div v-for="(item, index) in listBuy" @click="doOrder(index, 'sell')" v-bind:data-hash="item.hash" class="buy row">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{item.orderFills / 10**18}}</div>
-								<div class="col PRICE">{{(item.amountGive / 10**18) / (item.amountGet / 10**18)}}</div>
+								<div class="col AMOUNT">{{(item.orderFills / 10**18).toFixed(4)}}</div>
+								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
 								<div class="col FIAT">$</div>
 							</div>
 						</div>
@@ -59,10 +59,10 @@
 							<div class="spread-val">0.00123</div>
 						</div>
 						<div class="orederbook__table sell">
-							<div v-for="(item, index) in listSell" @click="doOrder(index, 'buy')" v-bind:data-hash="item.hash" class="sell row">
+							<div v-for="(item, index) in listSell" @click="doOrder(index, 'buy')" :data-hash="item.hash" class="sell row">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{item.orderFills / 10**18}}</div>
-								<div class="col PRICE">{{item.amountGet / item.amountGive}}</div>
+								<div class="col AMOUNT">{{(item.orderFills / 10**18).toFixed(4)}}</div>
+								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
 								<div class="col FIAT">$</div>
 							</div>
 						</div>
@@ -78,11 +78,12 @@
 					</div>
 					<div class="orederbook__container">
 						<div class="orederbook__table">
-							<div v-for="(item, index) in personalOrders" v-bind:data-hash="item.hash" class="buy row">
+							<div v-for="(item, index) in personalOrders" v-bind:data-hash="item.hash" :class="item.orderType" class="row personalOrder">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{item.amountGet / 10**18}}</div>
-								<div class="col PRICE">{{(item.amountGive/10**18) / (item.amountGet / 10**18)}}</div>
+								<div class="col AMOUNT">{{(item.amountGet / 10**18).toFixed(4)}}</div>
+								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
 								<div class="col FIAT">$</div>
+								<div @click="cancelOrder(index)" class="col cancel">cancel</div>
 							</div>
 						</div>
 					</div>
@@ -111,23 +112,7 @@
 				tokenGiveAddress: this.pair.tokens[1],
 				personalOrders: null,
 				buyFrom: false,
-				order: {
-					contract: this.contract,
-					from: this.from,
-					tokenGet: null,
-					amountGet: null,
-					tokenGive: null,
-					amountGive: null,
-					expires: null,
-					nonce: null,
-					user: null,
-					v: null,
-					r: null,
-					s: null,
-					amount: null,
-					orderType: null,
-					price: null,
-				}
+				order: null,
 			}
 		},
 		computed: {
@@ -144,6 +129,9 @@
 			pair(){
 				this.tokenGetAddress = this.pair.tokens[0];
 				this.tokenGiveAddress = this.pair.tokens[1];
+				this.closeForm();
+				this.getOreders();
+				this.getPersonalOreders();
 			},
 
 		},
@@ -173,7 +161,7 @@
 					orderType: type,
 					price: data.price,
 				}
-				vm.buyFrom = true;
+				vm.buyFrom = window.innerWidth > 1024;
 			},
 			trade(e){
 				e.preventDefault()
@@ -217,10 +205,38 @@
 				const vm = this;
 				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalOrders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&maker=${vm.from}&page=0`)
 				.then(res => {
-					vm.personalOrders = res.data._items
+					var data = res.body._items;
+					data.forEach( function(element) {
+						if (element.tokenGet == vm.tokenGetAddress) {
+							element.orderType = 'buy'
+							element.price = element.amountGive / element.amountGet
+						}else{
+							element.orderType = 'sell'
+							element.price = element.amountGet / element.amountGive
+						}
+					});
+					vm.personalOrders = data
 				}, err => {
 					console.log(err)
 				});
+			},
+			cancelOrder: async function(i){
+				const vm = this;
+				let data = this.personalOrders[i]
+				let rsv = exchange.rsv(web3, data.sig);
+
+				await exchange.cancelOrder(
+					vm.contract,
+					vm.from,
+					data.tokenGet,
+					data.amountGet,
+					data.tokenGive,
+					data.amountGive,
+					data.expires,
+					data.nonce,
+					rsv.v,
+					rsv.r,
+					rsv.s)
 			}
 	    },
 	    created() {
@@ -235,6 +251,25 @@
 </script>
 
 <style lang="scss">
+	.personalOrder{
+
+		overflow: hidden;
+		&:hover{
+
+			.cancel{
+				right: 0;
+			}
+		}
+
+	}
+	.cancel{
+		position: absolute;
+		background-color: #ef5777;
+		transition: 0.2s ease-in-out;
+		right: -33%;
+		top: 0;
+		line-height: 1.8;
+	}
 	.total{
 		margin: 25px 0;
 	}
@@ -251,14 +286,6 @@
 		word-wrap: break-word;
 		color: #ffffff;
 		margin-bottom: 5px;
-	}
-	.window{
-		margin: 1px;
-		padding: 14px 5px 5px 5px;
-		background-color: #242323;
-		color: #fff;
-		border: 1px solid  #141414;
-		box-sizing: border-box;
 	}
 	.orderbook-item{
 		margin: 28px 0px;

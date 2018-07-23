@@ -35,11 +35,14 @@
       
     },
     created(){
-      var vueSelf = this;
+      var vm = this;
 
       this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.contractAddress);
+
+      setInterval(function () {
+        web3.eth.getAccounts().then(res => vm.from = res[0]);
+      }, 5000)
       
-      web3.eth.getAccounts().then(res => vueSelf.from = res[0]);
 
     }
   }
@@ -55,24 +58,8 @@
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
     height: 100vh;
+    width: 100vw !important;
+    overflow-x: hidden;
 
-  }
-  .charts{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  .workflow{
-    display: flex;
-    justify-content: space-between;
-    height: 100vh;
-    padding-top: 50px;
-    box-sizing: border-box;
-  }
-  .aside-left,
-  .aside-right{
-    height: 100%;
-    display: flex;
-    flex-direction: column;
   }
 </style>

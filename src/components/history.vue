@@ -12,7 +12,7 @@
 						<a target="_blank" :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in historyData" :class="item.orderType" class="row history__row">
 							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
 							<div class="col price"><span>{{(item.amountGet / item.amountGive).toFixed(4)}}</span></div>
-							<div class="col time">{{`${new Date(item.date).getUTCMonth()}/${new Date(item.date).getUTCDay()} ${new Date(item.date).getUTCHours()}:${new Date(item.date).getUTCMinutes()}`}}</div>
+							<div class="col time">{{item.date}}</div>
 						</a>
 					</div>
 				</div>
@@ -28,7 +28,7 @@
 						<a :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in personalHistoryData" :class="item.orderType" class="row history__row">
 							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
 							<div class="col price"><span>{{(item.amountGet / item.amountGive).toFixed(4)}}</span></div>
-							<div class="col time">{{`${new Date(item.date).getUTCMonth()}/${new Date(item.date).getUTCDay()} ${new Date(item.date).getUTCHours()}:${new Date(item.date).getUTCMinutes()}`}}</div>
+							<div class="col time">{{item.date}}</div>
 						</a>
 					</div>
 				</div>
@@ -68,47 +68,37 @@
 				.then(res => {
 					var data = res.body._items;
 					data.forEach(function(element){
+						element.date = new Date(element.date);
+						element.date = `${
+							element.date.getUTCMonth() < 10 ? '0' + element.date.getUTCMonth() : element.date.getUTCMonth()}/${
+							element.date.getUTCDay() < 10 ? '0' + element.date.getUTCDay() : element.date.getUTCDay()} ${
+							element.date.getUTCHours() < 10 ? '0' + element.date.getUTCHours() : element.date.getUTCHours()}:${
+							element.date.getUTCMinutes() < 10 ? '0' + element.date.getUTCMinutes() : element.date.getUTCMinutes()}`
 						if(element.tokenGet == vm.tokenGetAddress){
 							element.orderType = 'buy'
 						}else{
 							element.orderType = 'sell'
 						}
 					});
-					vm.historyData = data
+					var personalData = data.filter(element => element.maker.toLowerCase() == vm.from.toLowerCase() || element.taker.toLowerCase() == vm.from.toLowerCase());
+
+					vm.personalHistoryData = personalData.reverse();
+					vm.historyData = data.reverse();
 				}, err => {
 					console.log(err)
 				});
 			},
-			getPersonalTradeHistory(){
-				const vm = this;
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalHistoryTrade?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&wallet=${vm.from}&page=0`)
-				.then(res => {
-					var data = res.body._items;
-					data.forEach(function(element){
-						if(element.tokenGet == vm.tokenGetAddress){
-							element.orderType = 'buy'
-						}else{
-							element.orderType = 'sell'
-						}
-					});
-					vm.personalHistoryData = data
-				}, err => {
-					console.log(err)
-				});
-			}
 		},
 		created(){
 			var vm = this;
 			setInterval(function(){
 				vm.getTradeHistory();
-				vm.getPersonalTradeHistory();
 			}, 8000);
 		}
 	}
 </script>
 
 <style lang="scss">
-
 	.history__row{
 		.price{
 			display: flex;
@@ -139,9 +129,9 @@
 		}
 	} 
 	.history{
-		width: 378px;
+		width: 100%;
 		height: 540px;
-		flex: 1;
+		flex: 0 1 100%;
 		display: flex;
 		flex-direction: column;
 	}

@@ -1,8 +1,7 @@
 <template>
-	<div class="window chart">
-		<div class="window__title">PRICE CHART</div>
+	<div class="chart">
 		<div class="chart__container">
-			<div id="chartdiv"></div>
+			<div ref="chart" id="chartdiv"></div>
 		</div>
 	</div>
 </template>
@@ -21,6 +20,12 @@
 		props: {
 			pair: Object,
 		},
+		watch: {
+			pair() {
+				this.getChartData();
+				console.log('new chart!')
+			}
+		},
 		methods: {
 			getChartData(){
 				var vm = this
@@ -35,9 +40,11 @@
 					vm.chartData = data;
 
 					var chart = AmCharts.makeChart("chartdiv", {
+						"hideCredits": true,
 						"type": "stock",
 						"theme": "black",
 						"useUTC": true,
+						"startDate": data[0].date,
 						"dataSets": [
 							{
 								"fieldMappings": [{
@@ -156,7 +163,7 @@
 						},
 
 						"categoryAxesSettings": {
-							"minPeriod": "10mm"
+							"minPeriod": "mm"
 						},
 
 						"chartCursorSettings": {
@@ -165,231 +172,46 @@
 						},
 
 						"periodSelector": {
-							"dateFormat": "NN-HH-DD",
+							"inputFieldsEnabled": false,
+							"dateFormat": "HH:NN DD-MM-YYYY",
 							"position": "bottom",
 							"periods": [{
-								"period": "10mm",
-								"count": 3,
-								"label": "15 min",
-								"selected": true
+								"period": "mm",
+								"count": 15,
+								"label": "15 min"
 							}, {
-								"period": "HH",
-								"count": 1000,
+								"period": "mm",
+								"count": 60,
 								"label": "1 hour"
 							}, {
-								"period": "HH",
-								"count": 10000,
+								"period": "hh",
+								"count": 24,
 								"label": "1 day"
 							}, {
-								"period": "YTD",
-								"label": "YTD"
-							}, {
 								"period": "MAX",
-								"label": "MAX"
+								"label": "MAX",
+								"selected": true
 							}]
 						}
 					});
-					
-					console.log(chart)
+
 				})
+				
 			}
 		},
-		created(){
-
-
+		created(){	
 
 			let vm = this;
 			// generateChartData();
+
+			// setInterval(function () {
+			// 	var elem = document.querySelectorAll('.chart a')
+			// 	elem.forEach(el => el.style.display = 'none')
+			// }, 4000)
+
+
+			setInterval(vm.getChartData(), 5000)
 			vm.getChartData();
-
-			function generateChartData() {
-				var firstDate = new Date();
-				firstDate.setHours(0, 0, 0, 0);
-				firstDate.setDate(firstDate.getDate() - 1000);
-
-				for (var i = 0; i < 50; i++) {
-					var newDate = new Date(firstDate);
-
-					newDate.setDate(newDate.getDate() + i);
-
-					var open = Math.round(Math.random() * (30) + 100);
-					var close = open + Math.round(Math.random() * (15) - Math.random() * 10);
-
-					var low;
-					if (open < close) {
-						low = open - Math.round(Math.random() * 5);
-					} else {
-						low = close - Math.round(Math.random() * 5);
-					}
-
-					var high;
-					if (open < close) {
-						high = close + Math.round(Math.random() * 5);
-					} else {
-						high = open + Math.round(Math.random() * 5);
-					}
-
-					var volume = Math.round(Math.random() * (1000 + i)) + 100 + i;
-					var value = Math.round(Math.random() * (30) + 100);
-
-					vm.chartData.push({
-						"date": newDate,
-						"open": open,
-						"close": close,
-						"high": high,
-						"low": low,
-						"volume": volume,
-						"value": value
-					});
-				}
-			}
-
-			// var chart = AmCharts.makeChart("chartdiv", {
-			// 	"type": "stock",
-			// 	"theme": "black",
-			// 	"dataSets": [{
-			// 		"fieldMappings": [{
-			// 			"fromField": "open",
-			// 			"toField": "open"
-			// 		}, {
-			// 			"fromField": "close",
-			// 			"toField": "close"
-			// 		}, {
-			// 			"fromField": "high",
-			// 			"toField": "high"
-			// 		}, {
-			// 			"fromField": "low",
-			// 			"toField": "low"
-			// 		}, {
-			// 			"fromField": "volume",
-			// 			"toField": "volume"
-			// 		}, {
-			// 			"fromField": "value",
-			// 			"toField": "value"
-			// 		}],
-			// 		"color": "#fff",
-			// 		"dataProvider": vm.chartData,
-			// 		"title": vm.pair.name.toUpperCase(),
-			// 		"categoryField": "date"
-			// 	}, {
-			// 		"fieldMappings": [{
-			// 			"fromField": "value",
-			// 			"toField": "value"
-			// 		}]
-			// 	}],
-
-
-			// 	"panels": [{
-			// 			"title": "Value",
-			// 			"showCategoryAxis": false,
-			// 			"percentHeight": 70,
-			// 			"valueAxes": [{
-			// 				"labelsEnabled": false,
-			// 				"id": "v1",
-			// 				"dashLength": 5
-			// 			}],
-
-			// 			"categoryAxis": {
-			// 				"dashLength": 5
-			// 			},
-
-			// 			"stockGraphs": [{
-			// 				"type": "candlestick",
-			// 				"id": "g1",
-			// 				"openField": "open",
-			// 				"closeField": "close",
-			// 				"highField": "high",
-			// 				"lowField": "low",
-			// 				"valueField": "close",
-			// 				"lineColor": "#0be881",
-			// 				"fillColors": "#0be881",
-			// 				"negativeLineColor": "#ff5e57",
-			// 				"negativeFillColors": "#ff5e57",
-			// 				"fillAlphas": 1,
-			// 				"useDataSetColors": false,
-			// 				"comparable": true,
-			// 				"compareField": "value",
-			// 				"showBalloon": true,
-			// 				"balloonText": "Open:<b>[[open]]</b><br>Low:<b>[[low]]</b><br>High:<b>[[high]]</b><br>Close:<b>[[close]]</b><br>",
-			// 				"proCandlesticks": true
-			// 			}],
-
-			// 			"stockLegend": {
-			// 				"valueTextRegular": undefined,
-			// 				"periodValueTextComparing": "[[percents.value.close]]%"
-			// 			}
-			// 		},
-
-			// 		{
-			// 			"title": "Volume",
-			// 			"percentHeight": 30,
-			// 			"marginTop": 1,
-			// 			"showCategoryAxis": true,
-			// 			"valueAxes": [{
-			// 				"labelsEnabled": false,
-			// 				"dashLength": 5
-			// 			}],
-
-			// 			"categoryAxis": {
-			// 				"dashLength": 5
-			// 			},
-
-			// 			"stockGraphs": [{
-			// 				"valueField": "volume",
-			// 				"type": "column",
-			// 				"showBalloon": false,
-			// 				"fillAlphas": 1
-			// 			}],
-
-			// 			"stockLegend": {
-			// 				"markerType": "none",
-			// 				"markerSize": 0,
-			// 				"labelText": "",
-			// 				"periodValueTextRegular": "[[value.close]]"
-			// 			}
-			// 		}
-			// 	],
-
-			// 	"chartScrollbarSettings": {
-			// 		"graph": "g1",
-			// 		"graphType": "line",
-			// 		"usePeriod": "WW"
-			// 	},
-
-			// 	"chartCursorSettings": {
-			// 		"valueLineBalloonEnabled": true,
-			// 		"valueLineEnabled": true
-			// 	},
-
-			// 	"periodSelector": {
-			// 		"position": "bottom",
-			// 		"periods": [{
-			// 			"period": "DD",
-			// 			"count": 10,
-			// 			"label": "10 days"
-			// 		}, {
-			// 			"period": "MM",
-			// 			"selected": true,
-			// 			"count": 1,
-			// 			"label": "1 month"
-			// 		}, {
-			// 			"period": "YYYY",
-			// 			"count": 1,
-			// 			"label": "1 year"
-			// 		}, {
-			// 			"period": "YTD",
-			// 			"label": "YTD"
-			// 		}, {
-			// 			"period": "MAX",
-			// 			"label": "MAX"
-			// 		}]
-			// 	},
-			// 	// "export": {
-			// 	// 	"enabled": true
-			// 	// }
-			// });
-
-			// console.log(chart)
 		}
 	}
 </script>
@@ -398,6 +220,9 @@
 		flex: 1 100%;
 		display: flex;
 		flex-direction: column;
+		a{
+			display: none !important;
+		}
 	}
 	.window__title{
 		padding: 0px 14px;

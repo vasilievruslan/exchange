@@ -1,6 +1,5 @@
 <template>
-	<div class="window depth">
-		<div class="depth__title">DEPTH</div>
+	<div class="depth">
 		<div class="depth__container">
 			<div id="depth-chart"></div>
 		</div>

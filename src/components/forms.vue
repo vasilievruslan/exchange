@@ -19,7 +19,7 @@
 								<label :class="{active: picked == item.blockAmount}" class="expries " :for="item.title">{{item.title}}</label>
 							</span>
 						</p>
-						<p class="button-container"><button v-on:click="postBuyOrder" class="button">PLACE BUY ORDER</button></p>
+						<p class="button-container"><button @click.prevent="postOrder(token1, token2, buyAmount, buyTotal)" class="button">PLACE BUY ORDER</button></p>
 					</form>
 				</div>
 			</v-tab>
@@ -41,7 +41,7 @@
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
 								<label :class="{active: picked == item.blockAmount}" class="expries " :for="item.title">{{item.title}}</label>
 							</span>
-						<p class="button-container"><button v-on:click="postSellOrder" class="button sell">PLACE SELL ORDER</button></p>
+						<p class="button-container"><button @click.prevent="postOrder(token2, token1, sellAmount, sellTotal)" class="button sell">PLACE SELL ORDER</button></p>
 					</form>
 				</div>	
 			</v-tab>
@@ -65,14 +65,14 @@
 					<form class="forms__box form__manage">
 						<div class="form__sell__withdraw">
 							<p class="input__title">WITHDRAW -><span v-for="item in tokensData"><input
-										class="radio-btn" 
-										type="radio" 
-										:id="item.token" 
-										:value="item.token" 
-										v-model="withdrawToken"><label 
-										:class="{active: withdrawToken == item.token}" 
-										class="expries" 
-										:for="item.token">{{item.name}}</label></span>[choose currency]</p>
+								class="radio-btn" 
+								type="radio" 
+								:id="item.token" 
+								:value="item.token" 
+								v-model="withdrawToken"><label 
+								:class="{active: withdrawToken == item.token}" 
+								class="expries" 
+								:for="item.token">{{item.name}}</label></span>[choose currency]</p>
 							<p class="input__contaner --amount"><input v-model="withdrawAmount" placeholder="amount" type="number"><button v-on:click="withdraw" class="btn btn_deposit">SENT</button></p>
 						</div>
 					</form>
@@ -100,28 +100,28 @@
 				expires: [
 					{
 						title: '1H',
-						blockAmount: 8839118
+						blockAmount: 498,
 					},
 					{
 						title: '1D',
-						blockAmount: 8839119
+						blockAmount: 11952,
 					},
 					{
 						title: '1W',
-						blockAmount: 8839120
+						blockAmount: 83664,
 					}
 				],
 				buyAmount: 0,
-				buyPrice: 0.1,
+				buyPrice: this.lastDeal,
 				sellAmount: 0,
-				sellPrice: 0.1,
+				sellPrice: this.lastDeal,
 				depositAmount: null,
 				withdrawAmount: null,
 				contract: null,
 				tokenContarct: null,
 				hash: null,
 				sign: null,
-				picked: 8839118,
+				picked: 498,
 
 				token1: this.pair.tokens[0],
 				token2: this.pair.tokens[1],
@@ -130,6 +130,9 @@
 			}
 		},
 		computed: {
+			lastDeal(){
+				return this.$parent.lastDeal.amountGet / this.$parent.lastDeal.amountGive
+			},
 			tokensData(){
 				return [
 					{
@@ -190,41 +193,21 @@
 					exchange.withdrawToken(this.contract, this.from, this.withdrawToken, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
 				}
 			},
-			postBuyOrder(e){
-				e.preventDefault();
+			postOrder(tokenGet, tokenGive, amountGet, amountGive){
 				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, vm.from, settings.exchangeAddress, vm.token1.toLowerCase(), vm.buyAmount * 10**18, vm.token2.toLowerCase(), vm.buyTotal * 10**18, parseFloat(vm.picked), nonce)
-					.then(res => vm.sign = res) 
-
-					await vm.resource.save({
-						"maker": vm.from.toLowerCase(),
-						"tokenGet": vm.token1.toLowerCase(),
-						"amountGet": parseFloat(vm.buyAmount) * 10**18,
-						"tokenGive": vm.token2.toLowerCase(),
-						"amountGive": parseFloat(vm.buyTotal) * 10**18,
-						"expires": parseFloat(vm.picked),
-						"nonce": parseFloat(nonce),
-						"sig": vm.sign
-					}).then(res => console.log(res)).catch(err => console.log(err))
-				})()
-			},
-			postSellOrder(e){
-				e.preventDefault();
-				const vm = this;
-				(async function(){
-					var nonce = Math.floor(Math.random() * 1000000) + 100
-					await exchange.getSign(web3, vm.from, settings.exchangeAddress, vm.token2, vm.sellTotal * 10**18, vm.token1.toLowerCase(), vm.sellAmount * 10**18, parseFloat(vm.picked), nonce)
+					var expires = null;
+					await web3.eth.getBlockNumber().then(res => expires = res + parseFloat(vm.picked))
+					await exchange.getSign(web3, vm.from, settings.exchangeAddress, tokenGet.toLowerCase(), amountGet * 10**18, tokenGive.toLowerCase(), amountGive * 10**18, expires, nonce)
 					.then(res => vm.sign = res)
-					
 					await vm.resource.save({
 						"maker": vm.from.toLowerCase(),
-						"tokenGet": vm.token2.toLowerCase(),
-						"amountGet": parseFloat(vm.sellTotal) * 10**18,
-						"tokenGive": vm.token1.toLowerCase(),
-						"amountGive": parseFloat(vm.sellAmount) * 10**18,
-						"expires": parseFloat(vm.picked),
+						"tokenGet": tokenGet.toLowerCase(),
+						"amountGet": parseFloat(amountGet) * 10**18,
+						"tokenGive": tokenGive.toLowerCase(),
+						"amountGive": parseFloat(amountGive) * 10**18,
+						"expires": expires,
 						"nonce": parseFloat(nonce),
 						"sig": vm.sign
 					}).then(res => console.log(res)).catch(err => console.log(err))
@@ -233,7 +216,6 @@
 
 		},
 		created(){
-			console.log(ethjs)
 			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
 		},
 
@@ -264,6 +246,10 @@
 		width: 100%;
 
 	}
+	.forms__box{
+		max-width: 350px;
+		margin: 0 auto;
+	}
 	.tab{
 		padding: 6px;
 		width: 100%;
@@ -277,7 +263,8 @@
 		}
 	}
 	.forms{
-		flex: 0 0 437px;
+		flex: 1 0 420px;
+		display: flex;
 	}
 	.tabs__item{
 		text-transform: uppercase;
@@ -286,6 +273,8 @@
 		background-color: #2c2c2c;
 		padding: 22px;
 		font-size: 14px;
+		overflow: scroll;
+		flex: 1;
 	}
 	.input__title{
 		color: #aeaeae;

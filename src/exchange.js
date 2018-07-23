@@ -145,9 +145,9 @@ export default{
 		return ethjs_.bufferToHex(ethjs_.sha256((contract_ + tokenGet_ + amountGet_ + tokenGive_ + amountGive_ + expires_ + nonce_).substr(2)));
 	},
 
-	cancelOrder: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_) {
+	cancelOrder: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, v_, r_, s_) {
 		let str;
-		await contract_.methods.cancelOrder(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_).send({from:from_},
+		await contract_.methods.cancelOrder(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, v_, r_, s_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
@@ -163,7 +163,7 @@ export default{
 		await web3_.eth.personal.sign(hash_, from_, 
 			function(err, res) {
 				obj = res;
-				alert('sign: ' + res)
+				// alert('sign: ' + res)
 			});
 		return await obj;
 	},
@@ -182,8 +182,8 @@ export default{
 	},
 	getSign: function(web3_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		var hash = this.orderHash(web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
-		alert('getSign: ' + this.sign(web3_, from_, hash));
-		alert(`hash: ${hash}`)
+		// alert('getSign: ' + this.sign(web3_, from_, hash));
+		// alert(`hash: ${hash}`)
 		return this.sign(web3_, from_, hash);
 	},
 	approve: async function (contract_, from_, spender_, value_) {
