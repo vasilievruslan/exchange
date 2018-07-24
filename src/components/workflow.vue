@@ -97,9 +97,12 @@
 			VTab,
 		},
 		created(){
-			var vueSelf = this;
+			var vm = this;
 			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
-			web3.eth.getAccounts().then(res => vueSelf.from = res[0]);
+
+			setInterval(function () {
+				web3.eth.getAccounts().then(res => vm.from = res[0]);
+			}, 5000)
 
 		},
 	}

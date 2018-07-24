@@ -202,14 +202,6 @@
 		created(){	
 
 			let vm = this;
-			// generateChartData();
-
-			// setInterval(function () {
-			// 	var elem = document.querySelectorAll('.chart a')
-			// 	elem.forEach(el => el.style.display = 'none')
-			// }, 4000)
-
-
 			setInterval(vm.getChartData(), 5000)
 			vm.getChartData();
 		}

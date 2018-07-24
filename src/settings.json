@@ -845,20 +845,17 @@
 				"name":"eth/erc20",
 				"path":"eth_erc20",
 				"symbols": ["eth", "erc20"],
-				"tokens": ["0x0000000000000000000000000000000000000000", "0xF022931dfcc5FaB6E9D13c68d9De55664be1c020"],
-				"amount": ["waiting", "waiting"]
+				"tokens": ["0x0000000000000000000000000000000000000000", "0xF022931dfcc5FaB6E9D13c68d9De55664be1c020"]
 			},{
-				"name":"eth/omg",
-				"path":"eth_omg",
-				"symbols": ["eth", "omg"],
-				"tokens": ["0x0000000000000000000000000000000000000000", "0xab694f889ee6c9a1a00afbebe03d1dd722ce3c02"],
-				"amount": ["waiting", "waiting"]
+				"name":"eth/tmn",
+				"path":"eth_tmn",
+				"symbols": ["eth", "tmn"],
+				"tokens": ["0x0000000000000000000000000000000000000000", "0xa36161c7643ebb50410cb50ef7d365ca3850c281"]
 			},{
 				"name":"eth/opl",
 				"path":"eth_opl",
 				"symbols": ["eth", "opl"],
-				"tokens": ["0x0000000000000000000000000000000000000000", "0x18bf50ce6c14fbc001b757322d126a3939fcd7d7"],
-				"amount": ["waiting", "waiting"]
+				"tokens": ["0x0000000000000000000000000000000000000000", "0x18bf50ce6c14fbc001b757322d126a3939fcd7d7"]
 			}
 		]
 }

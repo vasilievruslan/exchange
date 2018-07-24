@@ -33,7 +33,7 @@
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input v-model="sellPrice" placeholder="" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
+							<p class="input__contaner --price"><input v-model="sellPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
 						<p>TOTAL = <span>{{sellTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
@@ -112,9 +112,9 @@
 					}
 				],
 				buyAmount: 0,
-				buyPrice: this.lastDeal,
+				buyPrice: 1,
 				sellAmount: 0,
-				sellPrice: this.lastDeal,
+				sellPrice: 1,
 				depositAmount: null,
 				withdrawAmount: null,
 				contract: null,
@@ -131,7 +131,7 @@
 		},
 		computed: {
 			lastDeal(){
-				return this.$parent.lastDeal.amountGet / this.$parent.lastDeal.amountGive
+				return this.$parent.lastDeal
 			},
 			tokensData(){
 				return [
@@ -156,6 +156,10 @@
 			},
 		},
 		watch: {
+			lastDeal(){
+				this.buyPrice = this.lastDeal.amountGet / this.lastDeal.amountGive;
+				this.sellPrice = this.lastDeal.amountGet / this.lastDeal.amountGive
+			},
 			tokensData(){
 				this.depositToken = this.pair.tokens[0];
 				this.withdrawToken = this.pair.tokens[0];
