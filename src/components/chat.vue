@@ -19,7 +19,7 @@
 <style lang="scss">
 	.chat{
 		width: 378px;
-		flex: 1 0 420px;
+		flex: 1 0 40%;
 		display: flex;
 		flex-direction: column;
 	}

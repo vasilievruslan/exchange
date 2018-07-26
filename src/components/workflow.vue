@@ -30,18 +30,18 @@
 					</v-tab>
 				</vue-tabs>
 			</div>
-			<forms 
-				ref="forms"
-				:pair="pair"
-				:from="from" >
-			</forms>
-		</section>
-	      <aside class="aside-right">
 	        <history
 	        	ref="history"
 	        	:pair="pair"
 	        	:from="from">
 	        </history>
+		</section>
+	      <aside class="aside-right">
+			<forms 
+				ref="forms"
+				:pair="pair"
+				:from="from" >
+			</forms>
 	        <chat></chat>
 	      </aside>
 	    </main>
@@ -122,7 +122,7 @@
 		flex-direction: column;
 	}
 	.charts-tabs{
-		flex: 0 1 100%;
+		flex: 0 1 60%;
 		display: flex;
 	}
 	.workflow{

@@ -112,9 +112,9 @@
 					}
 				],
 				buyAmount: 0,
-				buyPrice: 1,
+				buyPrice: '',
 				sellAmount: 0,
-				sellPrice: 1,
+				sellPrice: '',
 				depositAmount: null,
 				withdrawAmount: null,
 				contract: null,
@@ -157,8 +157,7 @@
 		},
 		watch: {
 			lastDeal(){
-				this.buyPrice = this.lastDeal.amountGet / this.lastDeal.amountGive;
-				this.sellPrice = this.lastDeal.amountGet / this.lastDeal.amountGive
+				this.getPrice();
 			},
 			tokensData(){
 				this.depositToken = this.pair.tokens[0];
@@ -167,7 +166,10 @@
 			pair(){
 				this.token1 = this.pair.tokens[0];
 				this.token2 = this.pair.tokens[1];
+				this.buyPrice = '';
+				this.sellPrice = '';
 				console.log("something changed")
+				this.getPrice();
 			}
 		},
 		props:{
@@ -175,6 +177,15 @@
 			from: String,
 		},
 		methods: {
+			getPrice(){
+				const vm = this;
+				try {
+					vm.buyPrice = vm.buyPrice == '' ? vm.lastDeal.price : vm.buyPrice;
+					vm.sellPrice = vm.sellPrice == '' ? vm.lastDeal.price : vm.sellPrice;
+				} catch(e) {
+					console.log(e);
+				}
+			},
 			deposit(e) {
 				const vueSelf = this
 				e.preventDefault();
@@ -267,7 +278,7 @@
 		}
 	}
 	.forms{
-		flex: 1 0 420px;
+		flex: 1 0 60%;
 		display: flex;
 	}
 	.tabs__item{

@@ -11,7 +11,7 @@
 					<div class="history__container">
 						<a target="_blank" :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in historyData" :class="item.orderType" class="row history__row">
 							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
-							<div class="col price"><span>{{(item.amountGet / item.amountGive).toFixed(4)}}</span></div>
+							<div class="col price"><span>{{(item.price).toFixed(4)}}</span></div>
 							<div class="col time">{{item.date}}</div>
 						</a>
 					</div>
@@ -70,10 +70,13 @@
 					data.forEach(function(element){
 						element.date = new Date(element.date);
 						element.date = `${
-							element.date.getUTCMonth() < 10 ? '0' + element.date.getUTCMonth() : element.date.getUTCMonth()}/${
-							element.date.getUTCDay() < 10 ? '0' + element.date.getUTCDay() : element.date.getUTCDay()} ${
+							element.date.getUTCMonth() + 1 < 10 ? '0' + (element.date.getUTCMonth() + 1) : (element.date.getUTCMonth() + 1)}/${
+							element.date.getUTCDate() < 10 ? '0' + element.date.getUTCDate() : element.date.getUTCDate()} ${
 							element.date.getUTCHours() < 10 ? '0' + element.date.getUTCHours() : element.date.getUTCHours()}:${
-							element.date.getUTCMinutes() < 10 ? '0' + element.date.getUTCMinutes() : element.date.getUTCMinutes()}`
+							element.date.getUTCMinutes() < 10 ? '0' + element.date.getUTCMinutes() : element.date.getUTCMinutes()}`;
+						
+						element.price = element.amountGive / element.amountGet;
+
 						if(element.tokenGet == vm.tokenGetAddress){
 							element.orderType = 'buy'
 						}else{
@@ -131,7 +134,7 @@
 	.history{
 		width: 100%;
 		height: 540px;
-		flex: 0 1 100%;
+		flex: 0 1 40%;
 		display: flex;
 		flex-direction: column;
 	}

@@ -1,1 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="139" height="21" viewBox="0 0 139 21"><g><g transform="translate(-19 -13)"><g><g fill="#fff" font-family="'Roboto Mono','RobotoMono-Bold'" font-size="19"><text dominant-baseline="text-before-edge" font-family="Helvetica, Arial, sans-serif" transform="translate(18 13)"><tspan>Excalibur_</tspan></text></g></g><g><g fill="#ef5777" font-family="'Roboto Mono','RobotoMono-Bold'" font-size="12"><text dominant-baseline="text-before-edge" font-family="Helvetica, Arial, sans-serif" transform="translate(122 10)"><tspan>Alpha</tspan></text></g></g></g></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="143px" height="23px" viewBox="0 0 143 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>excaliburLogo</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="RobotoMono-Bold, Roboto Mono" font-weight="bold">
+        <g id="1" transform="translate(-19.000000, -11.000000)">
+            <g id="header">
+                <g id="excaliburLogo" transform="translate(20.000000, 12.000000)">
+                    <g id="logo" transform="translate(-2.000000, -2.000000)">
+                        <text id="Excalibur_" font-size="19" fill="#FFFFFF">
+                            <tspan x="0.990722656" y="21">Excalibur_</tspan>
+                        </text>
+                        <text id="Alpha" font-size="12" fill="#EF5777">
+                            <tspan x="108.49707" y="11">Alpha</tspan>
+                        </text>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
