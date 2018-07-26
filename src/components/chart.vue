@@ -17,6 +17,14 @@
 				chartData: [],
 			}
 		},
+		computed: {
+			tokenGetAddress() {
+				return this.pair.tokens[0]
+			},
+			tokenGiveAddress() {
+				return this.pair.tokens[1]
+			}
+		},
 		props: {
 			pair: Object,
 		},
@@ -29,7 +37,7 @@
 		methods: {
 			getChartData(){
 				var vm = this
-				vm.$http.get(`https://exapi1.herokuapp.com/v0.1/priceChart?page=0`).then(res => {
+				vm.$http.get(`https://exapi1.herokuapp.com/v0.1/priceChart?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(res => {
 					var data = res.data._items
 					data.forEach(function(element){
 						element.volume = 1
@@ -177,19 +185,16 @@
 							"position": "bottom",
 							"periods": [{
 								"period": "mm",
-								"count": 15,
-								"label": "15 min"
-							}, {
-								"period": "mm",
 								"count": 60,
-								"label": "1 hour"
+								"label": "1H"
 							}, {
 								"period": "hh",
 								"count": 24,
-								"label": "1 day"
+								"label": "1D"
 							}, {
-								"period": "MAX",
-								"label": "MAX",
+								"period": "DD",
+								"label": "1W",
+								"count": 7,
 								"selected": true
 							}]
 						}

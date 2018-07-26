@@ -1,7 +1,7 @@
 <template>
 	<header class="header">
 		<div class="header__cotainer --left">
-			<div class="header__logo"><img src="../assets/excaliburLogo.png" alt="excalibur_alpha" class="header__logo-img"></div>
+			<div class="header__logo"><img src="../assets/excaliburLogo.svg" alt="excalibur_alpha" class="header__logo-img"></div>
 			<div class="header__pairs">
 				<div v-on:click="dropdown = !dropdown" class="cur-pair">{{ pair.name }} <span><svg id="SVGDoc" width="14" height="7" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:avocode="https://avocode.com/" viewBox="0 0 14 7"><defs><path d="M283,20l-7,7l-7,-7v0" id="Path-0"/><clipPath id="ClipPath1016"><use xlink:href="#Path-0" fill="#ffffff"/></clipPath></defs><g transform="matrix(1,0,0,1,-269,-20)"><g><title>arrow</title><use xlink:href="#Path-0" fill-opacity="0" fill="#ffffff" stroke-linejoin="miter" stroke-linecap="butt" stroke-opacity="1" stroke="#aeaeae" stroke-miterlimit="50" stroke-width="2" clip-path="url(&quot;#ClipPath1016&quot;)"/></g></g></svg></span></div>
 
@@ -81,7 +81,7 @@
 				dropdown: false,
 				amount1: '...',
 				amount2: '...',
-				metamask: 'metamask',
+				metamask: 'metamask-disconect',
 				alert: true,
 				menu: ''
 			}
@@ -111,7 +111,7 @@
 			},
 
 			checkMetaMask(){
-				if (typeof web3 !== 'undefined' && this.from !== undefined) {
+				if (typeof web3 !== 'undefined' && this.from !== null) {
 					this.metamask = 'metamask'
 				} else {
 					if (alert == true) {
@@ -135,7 +135,12 @@
 		created() {
 			const vm = this;
 			setInterval(function () {
-				vm.showBalance();
+				try {
+					vm.showBalance();
+				} catch(e) {
+					// statements
+					console.log(e);
+				}
 				vm.checkMetaMask();
 			}, 5000)
 

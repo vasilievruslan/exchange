@@ -95,22 +95,9 @@
 		name: 'forms',
 		data(){
 			return {
+				settings: settings,
 				depositToken: this.pair.tokens[0],
 				withdrawToken: this.pair.tokens[0],
-				expires: [
-					{
-						title: '1H',
-						blockAmount: 498,
-					},
-					{
-						title: '1D',
-						blockAmount: 11952,
-					},
-					{
-						title: '1W',
-						blockAmount: 83664,
-					}
-				],
 				buyAmount: 0,
 				buyPrice: '',
 				sellAmount: 0,
@@ -118,18 +105,36 @@
 				depositAmount: null,
 				withdrawAmount: null,
 				contract: null,
-				tokenContarct: null,
 				hash: null,
 				sign: null,
-				picked: 498,
 
 				token1: this.pair.tokens[0],
 				token2: this.pair.tokens[1],
 
 				spender: settings.exchangeAddress,
+
+				picked: '',
+
 			}
 		},
 		computed: {
+			blockSpeed(){ return this.settings.blockSpeed},
+			expires(){
+				return [
+					{
+						title: '1H',
+						blockAmount: parseFloat((3600 / this.blockSpeed).toFixed(0)),
+					},
+					{
+						title: '1D',
+						blockAmount: parseFloat((86400 / this.blockSpeed).toFixed(0)),
+					},
+					{
+						title: '1W',
+						blockAmount: parseFloat((604800 / this.blockSpeed).toFixed(0)),
+					}
+				]
+			},
 			lastDeal(){
 				return this.$parent.lastDeal
 			},
@@ -164,10 +169,10 @@
 				this.withdrawToken = this.pair.tokens[0];
 			},
 			pair(){
-				this.token1 = this.pair.tokens[0];
-				this.token2 = this.pair.tokens[1];
 				this.buyPrice = '';
 				this.sellPrice = '';
+				this.token1 = this.pair.tokens[0];
+				this.token2 = this.pair.tokens[1];
 				console.log("something changed")
 				this.getPrice();
 			}
@@ -231,7 +236,14 @@
 
 		},
 		created(){
-			this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
+			try {
+				this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
+			} catch(e) {
+				// statements
+				console.log(e);
+			}
+
+			this.picked = this.expires[0].blockAmount;
 		},
 
 	}

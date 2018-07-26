@@ -92,15 +92,19 @@ export default{
 	},
 	balanceOf: async function (contract_, token_, user_) {
 		let str;
-		await contract_.methods.balanceOf(token_, user_).call(
-			function(err, res){
-				if (!err){
-					str = res;
-					// alert(res);
-				} else {
-					alert(err);
-				}
-		});
+		try {
+			await contract_.methods.balanceOf(token_, user_).call(
+				function(err, res){
+					if (!err){
+						str = res;
+						// alert(res);
+					} else {
+						alert(err);
+					}
+			});
+		} catch(e) {
+			console.log(e);
+		}
 		return await str;
 	},
 	order: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {

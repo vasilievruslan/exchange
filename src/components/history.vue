@@ -59,6 +59,7 @@
 			pair(){
 				this.tokenGetAddress = this.pair.tokens[0];
 				this.tokenGiveAddress = this.pair.tokens[1];
+				this.getTradeHistory();
 			},
 		},
 		methods: {
@@ -83,10 +84,17 @@
 							element.orderType = 'sell'
 						}
 					});
-					var personalData = data.filter(element => element.maker.toLowerCase() == vm.from.toLowerCase() || element.taker.toLowerCase() == vm.from.toLowerCase());
 
-					vm.personalHistoryData = personalData.reverse();
+					try {
+						var personalData = data.filter(element => element.maker.toLowerCase() == vm.from.toLowerCase() || element.taker.toLowerCase() == vm.from.toLowerCase());
+						vm.personalHistoryData = personalData.reverse();
+					} catch(e) {
+						console.log(e);
+					}
+
 					vm.historyData = data.reverse();
+
+
 				}, err => {
 					console.log(err)
 				});
@@ -97,6 +105,7 @@
 			setInterval(function(){
 				vm.getTradeHistory();
 			}, 8000);
+
 		}
 	}
 </script>
@@ -130,7 +139,11 @@
 				border-color: #ff5e57 transparent transparent transparent;
 			}
 		}
-	} 
+	}
+	.col.price span {
+		width: 70px;
+		text-align: right;
+	}
 	.history{
 		width: 100%;
 		height: 540px;
@@ -176,10 +189,10 @@
 		height: 200px;
 		overflow: scroll;
 		-ms-overflow-style: none;  // IE 10+
-    	overflow: -moz-scrollbars-none;  // Firefox
-    	&::-webkit-scrollbar { 
-    		display: none;
-    	}
+		overflow: -moz-scrollbars-none;  // Firefox
+		&::-webkit-scrollbar { 
+			display: none;
+		}
 	}
 	.history__row{
 		font-weight: 400;

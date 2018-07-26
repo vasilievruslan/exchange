@@ -37,10 +37,19 @@
     created(){
       var vm = this;
 
-      this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.contractAddress);
+      try {
+        this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.contractAddress);
+      } catch(e) {
+        console.log(e);
+      }
 
       setInterval(function () {
-        web3.eth.getAccounts().then(res => vm.from = res[0]);
+        try {
+          web3.eth.getAccounts().then(res => vm.from = res[0]);
+        } catch(e) {
+          console.log(e);
+        }
+        
       }, 5000)
       
 
