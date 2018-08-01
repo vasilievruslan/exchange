@@ -137,7 +137,7 @@ export default{
 					alert(err);
 					alert('not ok')
 				}
-				
+
 				callback(hash)
 			}
 		);
@@ -154,16 +154,17 @@ export default{
 		return ethjs_.bufferToHex(ethjs_.sha256((contract_ + tokenGet_ + amountGet_ + tokenGive_ + amountGive_ + expires_ + nonce_).substr(2)));
 	},
 
-	cancelOrder: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, v_, r_, s_) {
+	cancelOrder: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, v_, r_, s_, callback) {
 		let str;
 		await contract_.methods.cancelOrder(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, v_, r_, s_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
 					alert(err);
 				}
+				callback(hash)
 		});
 		return await str;
 	},

@@ -40,7 +40,7 @@
 		<div v-if="canselForm == true" class="orederbook__form">
 			<div class="orederbook__form-title">
 				<div>CANSEL</div>
-				<div @click="closeForm" class="close-btn">
+				<div @click.prevent="closeForm" class="close-btn">
 					<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10">
 						<g transform="matrix(1,0,0,1,-351,-64)">
 							<path d="M352,72.07107l3.18198,-3.18198l-3.18198,-3.18198l0.7071,-0.70711l3.18198,3.18198l3.18198,-3.18198l0.7071,0.70711l-3.18198,3.18198l3.18198,3.18198l-0.70711,0.7071l-3.18197,-3.18198l-3.18198,3.18198z" fill-opacity="0" fill="#ffffff" stroke-linejoin="miter" stroke-linecap="butt" stroke-opacity="1" stroke="#ffffff" stroke-miterlimit="50" stroke-width="1" id="Path-0"/>
@@ -53,15 +53,13 @@
 				<div class="orderbook-item flex-item">
 					<div class="orderbook-col">
 						<div class="od-title">AMOUNT</div>
-						<div class="od-amount">{{canselOrderData.orderBody.orderFills}} {{pair.symbols[0].toUpperCase()}}</div>
+						<div class="od-amount">{{canselOrderData.orderBody.amount}} {{pair.symbols[0].toUpperCase()}}</div>
 						<div class="od-title">PRICE</div>
 						<div class="od-amount">{{canselOrderData.orderBody.price}}</div>
 					</div>
 					<div class="orderbook-col">
 						<div class="od-title">EXPIRES</div>
 						<div class="od-amount">{{canselOrderData.expires}}</div>
-						<div class="od-title">ADDRESS</div>
-						<div class="od-amount">{{canselOrderData.user}}</div>
 					</div>
 				</div>
 				<div class="orderbook-item">
@@ -110,7 +108,7 @@
 					</div>
 					<div class="orederbook__container">
 						<div class="orederbook__table">
-							<div @click="" v-for="(item, index) in personalOrders" v-bind:data-hash="item.hash" :class="item.orderType" class="row personalOrder">
+							<div  v-for="(item, index) in personalOrders" @click="toCancelOrder(index)" v-bind:data-hash="item.hash" :class="item.orderType" class="row personalOrder">
 								<div class="col value"><span class="value-bar"></span></div>
 								<div class="col AMOUNT">{{(item.amount / 10**18).toFixed(4)}}</div>
 								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
@@ -216,6 +214,7 @@
 					vm.orderData = {
 						orderFills: data.orderFills / 10**18,
 						price:  data.price,
+
 					}
 					vm.order.orderType = 'sell'
 					
@@ -308,13 +307,13 @@
 
 				if (vm.personalOrders[i].orderType == 'buy') {
 					vm.personalOrders[i].orderBody = {
-						amount: (((vm.personalOrders[i].orderFills * vm.personalOrders[i].amountGive) / vm.personalOrders[i].amountGet) / 10**18).toFixed(4),
-						price: (vm.personalOrders[i].amountGet / vm.personalOrders[i].amountGive).toFixed(4),
+						amount: (vm.personalOrders[i].orderFills / 10**18).toFixed(4),
+						price: vm.personalOrders[i].price.toFixed(4),
 					}
 				}else{
 					vm.personalOrders[i].orderBody = {
-						orderFills: vm.personalOrders[i].orderFills / 10**18,
-						price: vm.personalOrders[i].price,
+						amount: (((vm.personalOrders[i].orderFills * vm.personalOrders[i].amountGive) / vm.personalOrders[i].amountGet) / 10**18).toFixed(4),
+						price: (vm.personalOrders[i].amountGet / vm.personalOrders[i].amountGive).toFixed(4),
 					}
 				}
 				vm.personalOrders[i].orderBody
@@ -328,7 +327,12 @@
 
 				let data = this.canselOrderData;
 				let rsv = exchange.rsv(web3, data.sig);
-				await exchange.cancelOrder(vm.contract, vm.from, data.tokenGet, data.amountGet, data.tokenGive, data.amountGive, data.expires, data.nonce, rsv.v, rsv.r, rsv.s)
+				await exchange.cancelOrder(vm.contract, vm.from, data.tokenGet, data.amountGet, data.tokenGive, data.amountGive, data.expires, data.nonce, rsv.v, rsv.r, rsv.s, function(h){
+					vm.txhash = String(h);
+					vm.popup = true
+				})
+
+				vm.canselForm = false;
 			},
 	    },
 	    created() {
