@@ -12,6 +12,10 @@
 		"p3": "ws://kovan.infura.io/GiDCavBXupdlU3zX2SVo",
 		"p4": "wss://kovan.infura.io/ws"
 	},
+	"network": {
+		"name": "Kovan",
+		"etherscan": "https://kovan.etherscan.io/"
+	},
 	"blockSpeed": 7.28,
 	"apiPort": 8000,
 	"eventsStartBlock": 7865321, 

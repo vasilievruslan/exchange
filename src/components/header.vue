@@ -47,21 +47,45 @@
 			<div class="apps">
 				<div class="apps__item ledger__logo">
 					<img src="../assets/ledger.svg" alt="">
+					<toolkit class="ledger-toolkit">
+						LEDGER <br>
+						Avaliable soon.
+					</toolkit>
 				</div>
 				<div class="apps__item metamask__logo">
 					<i class="ico" :class="metamask" alt=""></i>
+					<toolkit class="metamask-toolkit">
+						<div v-if="metamask == 'metamask'" class="metamask-continer">
+							<div class="metamask-copy">
+								<input id="address" :value="from" type="text">
+								<button @click="copy" class="copy"><img src="../assets/copy-ico.svg" alt=""></button>
+							</div>
+							<div class="indicators">
+								<div class="condition --green">ACTIVE</div>
+								<div class="network --purple">{{network.toUpperCase()}}</div>
+							</div>
+						</div>
+						<div v-else class="metamask-continer">
+							<div class="title">METAMASK IS NOT AVAILABLE</div>
+							<div class="extantion-container">
+								<div class="">Please unlock your wallet or install chrome extension.</div>
+								<a target="_blank" href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en">INSTALL</a>
+							</div>
+						</div>
+					</toolkit>
 				</div>
 			</div>
 		</div>
 		<div class="menu" @click="showMenu">
 			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="30px" height="30px">
 				<g>
-					<path id="path1" d="M491.318,235.318H20.682C9.26,235.318,0,244.577,0,256s9.26,20.682,20.682,20.682h470.636    c11.423,0,20.682-9.259,20.682-20.682C512,244.578,502.741,235.318,491.318,235.318z" fill="#FFFFFF"/>
-					<path id="path2" d="M491.318,78.439H20.682C9.26,78.439,0,87.699,0,99.121c0,11.422,9.26,20.682,20.682,20.682h470.636    c11.423,0,20.682-9.26,20.682-20.682C512,87.699,502.741,78.439,491.318,78.439z" fill="#FFFFFF"/>
-					<path id="path3" d="M491.318,392.197H20.682C9.26,392.197,0,401.456,0,412.879s9.26,20.682,20.682,20.682h470.636    c11.423,0,20.682-9.259,20.682-20.682S502.741,392.197,491.318,392.197z" fill="#FFFFFF"/>
+					<path id="path1" d="M491.318,235.318H20.682C9.26,235.318,0,244.577,0,256s9.26,20.682,20.682,20.682h470.636	c11.423,0,20.682-9.259,20.682-20.682C512,244.578,502.741,235.318,491.318,235.318z" fill="#FFFFFF"/>
+					<path id="path2" d="M491.318,78.439H20.682C9.26,78.439,0,87.699,0,99.121c0,11.422,9.26,20.682,20.682,20.682h470.636	c11.423,0,20.682-9.26,20.682-20.682C512,87.699,502.741,78.439,491.318,78.439z" fill="#FFFFFF"/>
+					<path id="path3" d="M491.318,392.197H20.682C9.26,392.197,0,401.456,0,412.879s9.26,20.682,20.682,20.682h470.636	c11.423,0,20.682-9.259,20.682-20.682S502.741,392.197,491.318,392.197z" fill="#FFFFFF"/>
 				</g>
 			</svg>
 		</div>
+		
 	</header>
 </template>
 
@@ -72,24 +96,37 @@
 
 	import anime from 'animejs'
 
+	import toolkit from './toolkit.vue'
+
 	const web3 = provider.connectWeb3();
 
 	export default {
 		name: 'headerMain',
+		components: { toolkit, },
 		data: function(){
 			return {
 				dropdown: false,
 				amount1: '...',
 				amount2: '...',
-				metamask: 'metamask-disconect',
 				alert: true,
-				menu: ''
+				menu: '',
+				network: settings.network.name,
+
+				metamaskToolkit: false,
+				ladgerToolkit: false,
 			}
 		},
 		computed: {
 			pairs() {
-				return settings.pairs
+				return settings.pairs;
 			},
+			web3(){
+				return provider.connectWeb3();
+			},
+			metamask(){
+				return typeof this.web3 == 'undefined' && this.from == null || this.from == undefined ? 'metamask-disconect' : 'metamask'
+			}
+
 		},
 		props: {
 			contract: Object,
@@ -97,37 +134,34 @@
 			pair: Object,
 		},
 		methods: {
+			copy(){
+				let input = document.querySelector('#address')
+				input.select()
+				try {
+					var successful = document.execCommand('copy');
+					var msg = successful ? 'successful' : 'unsuccessful';
+					alert('Address was copied ' + msg);
+				} catch (err) {
+					console.log(err)
+				}
+				window.getSelection().removeAllRanges()
+			},
 			showMenu(){
 				this.menu = this.menu == '' ? 'active' : ''
-
-
 			},
 			showBalance(){
 				const vm = this;
 				exchange.balanceOf(vm.contract, vm.pair.tokens[0], vm.from)
-	        	.then(res => vm.amount1 = res / 10**18)
-	        	exchange.balanceOf(vm.contract, vm.pair.tokens[1], vm.from)
-	        	.then(res => vm.amount2 = res / 10**18)
+				.then(res => vm.amount1 = res / 10**18)
+				exchange.balanceOf(vm.contract, vm.pair.tokens[1], vm.from)
+				.then(res => vm.amount2 = res / 10**18)
 			},
-
-			checkMetaMask(){
-				if (typeof web3 !== 'undefined' && this.from !== null) {
-					this.metamask = 'metamask'
-				} else {
-					if (alert == true) {
-						alert('No web3? You should consider trying MetaMask!')
-						this.alert = flase
-					}
-					this.metamask = 'metamask-disconect'
-				}
-			}
 		},
 		watch:{
 			pair(){
 				this.showBalance();
 			},
 			from(){
-				this.checkMetaMask();
 				this.showBalance();
 			}
 		},
@@ -141,7 +175,7 @@
 					// statements
 					console.log(e);
 				}
-				vm.checkMetaMask();
+				// vm.checkMetaMask();
 			}, 5000)
 
 		}
@@ -149,6 +183,97 @@
 </script>
 
 <style lang="scss">
+	
+	.toolkit{
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		transform: translateY(100%);
+		font-size: 14px;
+		&.ledger-toolkit{
+			text-align: center;
+			padding: 33px 15px;
+			line-height: 1.6;
+		}
+		.title{
+			margin-bottom: 16px;
+		}
+		.extantion-container{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			a{
+				background-color: #0be881;
+				padding: 14px 20px;
+				color: #474747;
+				border-radius: 2px;
+				text-decoration: none;
+			}
+		}
+		.--green{
+			color: #0be881;
+		}
+		.--purple{
+			color: #690496;
+		}
+		.indicators{
+			display: flex;
+			justify-content: space-between;
+		}
+		.metamask-copy{
+			margin-bottom: 14px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		input{
+			font-size: 11px;
+			box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+			background-color: #242323;
+			color: #919191;
+			padding: 11px 14px;
+			border: none;
+			box-sizing: border-box;
+			display: block;
+			width: 100%;
+			outline: none;
+		}
+		button{
+			border: 1px solid #141414;
+			background-color: #242323;
+			border-radius: none;
+			display: block;
+			line-height: 0;
+			padding: 7px;
+			cursor: pointer;
+			outline: none;
+
+			img{
+				display: block;
+				width: 15px;
+			}
+		}
+	}
+	.apps__item{
+		padding: 7px;
+		&.metamask__logo{
+			&.disconect{
+				filter: grayscale(100%);
+			}
+		}
+		cursor: pointer;
+		&:hover{
+
+			.toolkit{
+				display: block;
+			}
+		}
+
+
+		.toolkit{
+			display: none;
+		}
+	}
 	.slide-enter-active{
 		animation: slide-in .5s;
 	}
@@ -182,7 +307,7 @@
 	}
 
 	.header{
-	    position: absolute;
+		position: absolute;
 		width: 100vw;
 		box-sizing: border-box;
 		display: flex;
@@ -208,6 +333,16 @@
 	.cur-pair{
 		cursor: pointer;
 		text-transform: uppercase;
+		position: relative;
+		padding-right: 20px;
+
+		span{
+			position: absolute;
+			right: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			line-height: 0;
+		}
 	}
 	.pairs{
 		position: absolute;
@@ -230,6 +365,7 @@
 	}
 	.lang-switcher{
 		margin: 0px 50px;
+		@extend .cur-pair;
 	}
 	.header__balances{
 		display: flex;
@@ -261,14 +397,6 @@
 		display: flex;
 		-ms-align-items: center;
 		align-items: center;
-	}
-	.apps__item{
-		margin: 7px;
-		&.metamask__logo{
-			&.disconect{
-				filter: grayscale(100%);
-			}
-		}
 	}
 	.menu{
 		display: none;

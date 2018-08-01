@@ -8,7 +8,7 @@
 
 <style>
 	.depth{
-		flex: 1 0 437px;
+		flex: 1;
 		display: flex;
 		flex-direction: column;
 

@@ -10,14 +10,14 @@
 					</div>
 					<div class="history__container">
 						<a target="_blank" :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in historyData" :class="item.orderType" class="row history__row">
-							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
+							<div class="col amount">{{(item.amount / 10**18).toFixed(4)}}</div>
 							<div class="col price"><span>{{(item.price).toFixed(4)}}</span></div>
-							<div class="col time">{{item.date}}</div>
+							<div class="col time">{{item.formatDate}}</div>
 						</a>
 					</div>
 				</div>
 			</v-tab>
-			<v-tab title="PERSONAL H">
+			<v-tab title="PERSONAL TH">
 				<div class="history__table">
 					<div  class="row history__header">
 						<div class="col">amount</div>
@@ -26,9 +26,9 @@
 					</div>
 					<div class="history__container">
 						<a :href="`https://kovan.etherscan.io/tx/${item.txHash}`" v-for="item in personalHistoryData" :class="item.orderType" class="row history__row">
-							<div class="col amount">{{(item.amountGet / 10**18).toFixed(4)}}</div>
-							<div class="col price"><span>{{(item.amountGet / item.amountGive).toFixed(4)}}</span></div>
-							<div class="col time">{{item.date}}</div>
+							<div class="col amount">{{(item.amount / 10**18).toFixed(4)}}</div>
+							<div class="col price"><span>{{item.price.toFixed(4)}}</span></div>
+							<div class="col time">{{item.formatDate}}</div>
 						</a>
 					</div>
 				</div>
@@ -68,31 +68,37 @@
 				this.$http.get(`https://exapi1.herokuapp.com/v0.1/historyTrade?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`)
 				.then(res => {
 					var data = res.body._items;
-					data.forEach(function(element){
-						element.date = new Date(element.date);
-						element.date = `${
-							element.date.getUTCMonth() + 1 < 10 ? '0' + (element.date.getUTCMonth() + 1) : (element.date.getUTCMonth() + 1)}/${
-							element.date.getUTCDate() < 10 ? '0' + element.date.getUTCDate() : element.date.getUTCDate()} ${
-							element.date.getUTCHours() < 10 ? '0' + element.date.getUTCHours() : element.date.getUTCHours()}:${
-							element.date.getUTCMinutes() < 10 ? '0' + element.date.getUTCMinutes() : element.date.getUTCMinutes()}`;
+
+					data.sort((a, b) => a.date - b.date).reverse()
+
+					.forEach(function(element){
+						element.formatDate = new Date(element.date);
+						element.formatDate = `${
+							element.formatDate.getUTCMonth() + 1 < 10 ? '0' + (element.formatDate.getUTCMonth() + 1) : (element.formatDate.getUTCMonth() + 1)}/${
+							element.formatDate.getUTCDate() < 10 ? '0' + element.formatDate.getUTCDate() : element.formatDate.getUTCDate()} ${
+							element.formatDate.getUTCHours() < 10 ? '0' + element.formatDate.getUTCHours() : element.formatDate.getUTCHours()}:${
+							element.formatDate.getUTCMinutes() < 10 ? '0' + element.formatDate.getUTCMinutes() : element.formatDate.getUTCMinutes()}`;
 						
-						element.price = element.amountGive / element.amountGet;
 
 						if(element.tokenGet == vm.tokenGetAddress){
 							element.orderType = 'buy'
+							element.price = element.amountGive / element.amountGet;
+							element.amount = element.amountGet
 						}else{
 							element.orderType = 'sell'
+							element.price = element.amountGet / element.amountGive;
+							element.amount = element.amountGive
 						}
 					});
 
 					try {
 						var personalData = data.filter(element => element.maker.toLowerCase() == vm.from.toLowerCase() || element.taker.toLowerCase() == vm.from.toLowerCase());
-						vm.personalHistoryData = personalData.reverse();
+						vm.personalHistoryData = personalData;
 					} catch(e) {
 						console.log(e);
 					}
 
-					vm.historyData = data.reverse();
+					vm.historyData = data;
 
 
 				}, err => {

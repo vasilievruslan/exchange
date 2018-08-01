@@ -14,8 +14,10 @@
 		name: 'chart',
 		data(){
 			return{
+				chart: null,
 				chartData: [],
 			}
+
 		},
 		computed: {
 			tokenGetAddress() {
@@ -46,13 +48,13 @@
 						element.date = newDate;
 					})
 					vm.chartData = data;
-
-					var chart = AmCharts.makeChart("chartdiv", {
+					vm.chart = AmCharts.makeChart("chartdiv", {
 						"hideCredits": true,
 						"type": "stock",
 						"theme": "black",
 						"useUTC": true,
-						"startDate": data[0].date,
+						"startDate": vm.chartData[0].date,
+						"glueToTheEnd": true,
 						"dataSets": [
 							{
 								"fieldMappings": [{
@@ -85,8 +87,22 @@
 								}]
 							}
 						],
-
-
+						"stockLegend": {
+							"valueTextRegular": undefined,
+							"periodValueTextComparing": "[[percents.value.close]]%"
+						},
+						"listeners": [ {
+						    "event": "rendered",
+						    "method": function( event ) {
+						      vm.chart.mouseDown = false;
+						      vm.chart.containerDiv.onmousedown = function() {
+						        vm.chart.mouseDown = true;
+						      }
+						      vm.chart.containerDiv.onmouseup = function() {
+						        vm.chart.mouseDown = false;
+						      }
+						    }
+						  } ],
 						"panels": [
 							{
 								"title": "Value",
@@ -151,7 +167,7 @@
 								"stockGraphs": [{
 									"valueField": "volume",
 									"type": "column",
-									"showBalloon": false,
+									"showBalloon": true,
 									"fillAlphas": 1
 								}],
 
@@ -164,12 +180,6 @@
 							}
 						],
 
-						"chartScrollbarSettings": {
-							"graph": "g1",
-							"graphType": "line",
-							"usePeriod": "HH"
-						},
-
 						"categoryAxesSettings": {
 							"minPeriod": "mm"
 						},
@@ -178,11 +188,16 @@
 							"valueLineBalloonEnabled": true,
 							"valueLineEnabled": true
 						},
-
+						"chartScrollbarSettings": {
+							"graph": "g1",
+							"usePeriod": "10mm",
+							// "position": "top"
+						},
 						"periodSelector": {
+							"periodsText": "",
 							"inputFieldsEnabled": false,
 							"dateFormat": "HH:NN DD-MM-YYYY",
-							"position": "bottom",
+							"position": "top",
 							"periods": [{
 								"period": "mm",
 								"count": 60,
@@ -202,17 +217,60 @@
 
 				})
 				
+			},
+			updateData(){
+				var vm = this
+				vm.$http.get(`https://exapi1.herokuapp.com/v0.1/priceChart?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(res => {
+					var data = res.data._items
+					data.forEach(function(element){
+						element.volume = 1
+						element.value = 1
+						var newDate = new Date(element.date)
+						element.date = newDate;
+					})
+					vm.chartData = data;
+
+					if (String(vm.chart.dataSets[0].dataProvider[vm.chart.dataSets[0].dataProvider.length - 1].date) !== String(vm.chartData[vm.chartData.length - 1].date)) {
+						vm.chart.dataSets[0].dataProvider.push(vm.chartData[vm.chartData.length - 1])
+						vm.chart.validateData()
+
+					}
+					// vm.chart.dataSets[0].dataProvider = vm.chartData
+
+				})
+
+				return vm.chartData
 			}
+
 		},
 		created(){	
-
 			let vm = this;
-			setInterval(vm.getChartData(), 5000)
 			vm.getChartData();
+			setInterval(vm.updateData, 5000)
+
 		}
 	}
 </script>
 <style lang="scss">
+	.amChartsPeriodSelector.amcharts-period-selector-div{
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 3;
+	}
+	.amChartsButton.amcharts-period-input,
+	.amChartsButtonSelected.amcharts-period-input-selected{
+		font-size: 14px;
+		color: #FFFFFF !important;
+		cursor: pointer;
+		border: none !important;
+		background: none !important;
+		font-weight: 700;
+		opacity: 1 !important;
+	}
+	.amChartsButtonSelected.amcharts-period-input-selected{
+		color: #0be881 !important;
+	}
 	.chart{
 		flex: 1 100%;
 		display: flex;

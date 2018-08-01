@@ -16,9 +16,9 @@
 				<div class="orderbook-item flex-item">
 					<div class="orderbook-col">
 						<div class="od-title">AMOUNT</div>
-						<div class="od-amount">{{order.orderFills / 10**18}} {{pair.symbols[0].toUpperCase()}}</div>
+						<div class="od-amount">{{orderData.orderFills}} {{pair.symbols[0].toUpperCase()}}</div>
 						<div class="od-title">PRICE</div>
-						<div class="od-amount">{{(order.price).toFixed(4)}}</div>
+						<div class="od-amount">{{orderData.price}}</div>
 					</div>
 					<div class="orderbook-col">
 						<div class="od-title">EXPIRES</div>
@@ -37,7 +37,39 @@
 				</div>
 			</form>
 		</div>
-		<vue-tabs v-if="buyFrom !== true">
+		<div v-if="canselForm == true" class="orederbook__form">
+			<div class="orederbook__form-title">
+				<div>CANSEL</div>
+				<div @click="closeForm" class="close-btn">
+					<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10">
+						<g transform="matrix(1,0,0,1,-351,-64)">
+							<path d="M352,72.07107l3.18198,-3.18198l-3.18198,-3.18198l0.7071,-0.70711l3.18198,3.18198l3.18198,-3.18198l0.7071,0.70711l-3.18198,3.18198l3.18198,3.18198l-0.70711,0.7071l-3.18197,-3.18198l-3.18198,3.18198z" fill-opacity="0" fill="#ffffff" stroke-linejoin="miter" stroke-linecap="butt" stroke-opacity="1" stroke="#ffffff" stroke-miterlimit="50" stroke-width="1" id="Path-0"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<form class="orederbook__form-container">
+				<div>ORDER</div>
+				<div class="orderbook-item flex-item">
+					<div class="orderbook-col">
+						<div class="od-title">AMOUNT</div>
+						<div class="od-amount">{{canselOrderData.orderBody.orderFills}} {{pair.symbols[0].toUpperCase()}}</div>
+						<div class="od-title">PRICE</div>
+						<div class="od-amount">{{canselOrderData.orderBody.price}}</div>
+					</div>
+					<div class="orderbook-col">
+						<div class="od-title">EXPIRES</div>
+						<div class="od-amount">{{canselOrderData.expires}}</div>
+						<div class="od-title">ADDRESS</div>
+						<div class="od-amount">{{canselOrderData.user}}</div>
+					</div>
+				</div>
+				<div class="orderbook-item">
+					<button class="buy-btn cansel" @click="canselOrder">CANSEL</button>
+				</div>
+			</form>
+		</div>
+		<vue-tabs v-if="buyFrom !== true && canselForm !== true">
 			<v-tab title="ORDERBOOK">
 				<div class="orederbook-wrap">
 					<div class="orederbook__table orederbook__titles row">
@@ -61,8 +93,8 @@
 						<div class="orederbook__table sell">
 							<div v-for="(item, index) in listSell" @click="doOrder(index, 'buy')" :data-hash="item.hash" class="sell row">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{(item.orderFills / 10**18).toFixed(4)}}</div>
-								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
+								<div class="col AMOUNT">{{(((item.orderFills * item.amountGive) / item.amountGet) / 10**18).toFixed(4)}}</div>
+								<div class="col PRICE">{{(item.amountGet / item.amountGive).toFixed(4)}}</div>
 								<div class="col FIAT">$</div>
 							</div>
 						</div>
@@ -78,18 +110,24 @@
 					</div>
 					<div class="orederbook__container">
 						<div class="orederbook__table">
-							<div v-for="(item, index) in personalOrders" v-bind:data-hash="item.hash" :class="item.orderType" class="row personalOrder">
+							<div @click="" v-for="(item, index) in personalOrders" v-bind:data-hash="item.hash" :class="item.orderType" class="row personalOrder">
 								<div class="col value"><span class="value-bar"></span></div>
-								<div class="col AMOUNT">{{(item.amountGet / 10**18).toFixed(4)}}</div>
+								<div class="col AMOUNT">{{(item.amount / 10**18).toFixed(4)}}</div>
 								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
 								<div class="col FIAT">$</div>
-								<div @click="cancelOrder(index)" class="col cancel">cancel</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</v-tab>
 		</vue-tabs>
+
+		<alert ctx="transaction" title="TRANSACTION" v-show="popup">
+			<div class="copy-input">
+				<div class="container"><input id="hash" ref="hash" v-model="txhash" type="text"><button @click.stop.prevent="copyHash" class="copy"><img src="../assets/copy-ico.svg" alt=""></button></div>
+				<div class="etherscan"><a target="_blank" :href="txlink">VIEW ON ETHERSCAN</a></div>
+			</div>
+		</alert>		
 	</div>
 </template>
 
@@ -98,7 +136,8 @@
 	import provider from '../provider.js'
 	import exchange from '../exchange.js'
 	import settings from '../settings.json'
-	import ethjs from 'ethereumjs-util'
+
+	import alert from './alert.vue'
 
 	const web3 = provider.connectWeb3();
 
@@ -112,13 +151,25 @@
 				tokenGiveAddress: this.pair.tokens[1],
 				personalOrders: null,
 				buyFrom: false,
-				order: null,
+				canselForm: false,
+				order: {},
+				orderData: {},
+				canselOrderData: {},
+				popup: false,
+				error: '',
+				txhash: '',
 			}
 		},
 		computed: {
+			txlink(){
+				return `${settings.network.etherscan}tx/${this.txhash}`
+			},
 			resource(){
 				return this.$resource('https://exapi1.herokuapp.com/v0.1/{type}?tget={tokenGet}&tgive={tokenGive}&page=0')
 			},
+			input(){
+				return this.$refs
+			}
 		},
 		props: {
 			pair: Object,
@@ -126,6 +177,9 @@
 			contract: Object,
 		},
 		watch: {
+			txhash(){
+				this.popup = true
+			},
 			pair(){
 				this.tokenGetAddress = this.pair.tokens[0];
 				this.tokenGiveAddress = this.pair.tokens[1];
@@ -135,13 +189,45 @@
 			},
 
 		},
+		components: {
+			alert
+		},
 		methods: {
+			copyHash(){
+				let input = document.querySelector('#hash')
+				input.select()
+				try {
+					var successful = document.execCommand('copy');
+					var msg = successful ? 'successful' : 'unsuccessful';
+					alert('Address was copied ' + msg);
+				} catch (err) {
+					console.log(err)
+				}
+				window.getSelection().removeAllRanges()
+			},
+			closePopup(){
+				this.popup = false
+			},
 			doOrder(i, type){
 				var vm = this;
 				if (type == 'sell') {
 					var data = vm.listBuy[i]
+
+					vm.orderData = {
+						orderFills: data.orderFills / 10**18,
+						price:  data.price,
+					}
+					vm.order.orderType = 'sell'
+					
 				}else{
 					var data = vm.listSell[i]
+					vm.orderData = {
+						orderFills: (((data.orderFills * data.amountGive) / data.amountGet) / 10**18).toFixed(4),
+						price: (data.amountGet / data.amountGive).toFixed(4),
+					}
+
+					vm.order.amount = vm.orderData.orderFills;
+					vm.order.orderType = 'buy'
 				}
 
 				var rsv = exchange.rsv(web3, data.sig);
@@ -157,37 +243,32 @@
 					v: rsv.v,
 					r: rsv.r,
 					s: rsv.s,
-					amount: data.orderFills / 10**18,
+					amount: vm.orderData.orderFills,
 					orderType: type,
 					price: data.price,
 				}
 				vm.buyFrom = window.innerWidth > 1024;
 			},
-			trade(e){
+			trade: async function(e){
 				e.preventDefault()
 				const vm = this;
-
-				console.log([vm.from.toLowerCase(), vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.order.amount * 10**18])
-				exchange.trade(
-					vm.contract, 
-					vm.from,
-					vm.order.tokenGet, 
-					vm.order.amountGet, 
-					vm.order.tokenGive, 
-					vm.order.amountGive, 
-					vm.order.expires, 
-					vm.order.nonce, 
-					vm.order.user, 
-					vm.order.v, 
-					vm.order.r, 
-					vm.order.s, 
-					vm.order.amount * 10**18).then(res => {
-						console.log(res)
-						vm.buyFrom = false;
-					}, err => console.log(err))
+				if(vm.order.orderType == 'buy') {
+					vm.orderData.amount = vm.order.amount * vm.order.price
+				}else{
+					vm.orderData.amount = vm.order.amount
+				}
+				// console.log([vm.from.toLowerCase(), vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.order.amount * 10**18])
+				// console.log(typeof vm.orderData.amount)
+				await exchange.trade(vm.contract, vm.from,vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.orderData.amount * 10**18, function(h) {
+					vm.txhash = String(h);
+					vm.popup = true
+				}).then(res => {
+					vm.buyFrom = false;
+				}, err => console.log(err))
 			},
 			closeForm(){
 				this.buyFrom = false;
+				this.censelForm = false;
 			},
 			getOreders() {
 				const vm = this;
@@ -210,7 +291,9 @@
 						if (element.tokenGet == vm.tokenGetAddress) {
 							element.orderType = 'buy'
 							element.price = element.amountGive / element.amountGet
+							element.amount = element.amountGet
 						}else{
+							element.amount = element.amountGive
 							element.orderType = 'sell'
 							element.price = element.amountGet / element.amountGive
 						}
@@ -220,24 +303,33 @@
 					console.log(err)
 				});
 			},
-			cancelOrder: async function(i){
+			toCancelOrder(i){
 				const vm = this;
-				let data = this.personalOrders[i]
-				let rsv = exchange.rsv(web3, data.sig);
 
-				await exchange.cancelOrder(
-					vm.contract,
-					vm.from,
-					data.tokenGet,
-					data.amountGet,
-					data.tokenGive,
-					data.amountGive,
-					data.expires,
-					data.nonce,
-					rsv.v,
-					rsv.r,
-					rsv.s)
-			}
+				if (vm.personalOrders[i].orderType == 'buy') {
+					vm.personalOrders[i].orderBody = {
+						amount: (((vm.personalOrders[i].orderFills * vm.personalOrders[i].amountGive) / vm.personalOrders[i].amountGet) / 10**18).toFixed(4),
+						price: (vm.personalOrders[i].amountGet / vm.personalOrders[i].amountGive).toFixed(4),
+					}
+				}else{
+					vm.personalOrders[i].orderBody = {
+						orderFills: vm.personalOrders[i].orderFills / 10**18,
+						price: vm.personalOrders[i].price,
+					}
+				}
+				vm.personalOrders[i].orderBody
+				vm.canselOrderData = vm.personalOrders[i];
+
+				vm.canselForm = true;
+
+			},
+			canselOrder: async function(i){
+				const vm = this;
+
+				let data = this.canselOrderData;
+				let rsv = exchange.rsv(web3, data.sig);
+				await exchange.cancelOrder(vm.contract, vm.from, data.tokenGet, data.amountGet, data.tokenGive, data.amountGive, data.expires, data.nonce, rsv.v, rsv.r, rsv.s)
+			},
 	    },
 	    created() {
 	    	var vm = this;
@@ -251,24 +343,44 @@
 </script>
 
 <style lang="scss">
-	.personalOrder{
-
-		overflow: hidden;
-		&:hover{
-
-			.cancel{
-				right: 0;
-			}
+	.etherscan{
+		margin-top: 19px;
+		a{
+			font-size: 14px;
+			color: #474747;
+			text-transform: uppercase;
+			background-color: #0be881;
+			padding: 12px;
+			display: block;
+			margin: 0 auto;
+			text-decoration: none;
+			text-align: center;
+			width: 246px;
 		}
-
 	}
-	.cancel{
-		position: absolute;
-		background-color: #ef5777;
-		transition: 0.2s ease-in-out;
-		right: -33%;
-		top: 0;
-		line-height: 1.8;
+	.copy-input{
+		.container{
+			display: flex;
+			justify-content: center;
+		}
+		input{
+			background-color: #242323;
+			box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+			border: none;
+			box-sizing: border-box;
+			padding: 13px;
+			width: 383px;
+			max-width: 90vw;
+			color: #ffffff;
+		}
+		button.copy{
+		    padding: 9px;
+    		line-height: 0;
+    		background-color: #242323;
+    		border: 1px solid #141414;
+    		cursor: pointer;
+    		outline: none;
+		}
 	}
 	.total{
 		margin: 25px 0;
@@ -326,6 +438,11 @@
 		cursor: pointer;
 		&.sell{
 			background-color: #ff5e57;
+		}
+
+		&.cansel{
+			background-color: #ef5777;
+			color: #ffffff;
 		}
 	}
 	.input-container{

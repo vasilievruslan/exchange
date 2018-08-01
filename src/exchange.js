@@ -124,18 +124,23 @@ export default{
 	// 	// var hash = rderHash(contract_, tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
 	// 	// var sig = sign(from_, hash);
 	// },
-	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_) {
+	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_, callback) {
 		let str;
-		alert('ok')
 		await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// hashInput_ = String(hash);
+					str = hash
+					console.log(hash)
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
 					alert(err);
 					alert('not ok')
 				}
-		});
+				
+				callback(hash)
+			}
+		);
 		return await str;
 	},
 	rsv: function (web3_, sig_) {

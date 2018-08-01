@@ -2,19 +2,126 @@
 	<div class="window chat">
 		<div class="chat__title">Chat</div>
 		<div class="chat__wrap">
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae architecto fugiat tempore corporis commodi, blanditiis, dicta at neque laboriosam modi perspiciatis beatae reiciendis hic soluta ipsam fuga, eius voluptatum temporibus nobis provident, doloremque dolor deserunt laborum ut? Quam incidunt eum impedit, tempora ipsam, ab facere repellendus! Placeat, debitis. Nobis, enim.</p>
-			<p>Obcaecati consequuntur commodi inventore, reprehenderit, mollitia labore nulla quisquam optio non, in laboriosam minus! Vitae mollitia quidem, libero voluptates aspernatur perferendis eos saepe tempore consequatur. Maiores nam rem perspiciatis quibusdam a repellendus, error eaque possimus, quas consectetur cumque pariatur, ea quis dolores. Unde ipsam perferendis, fuga minima quisquam ipsa nesciunt?</p>
-			<p>Necessitatibus inventore architecto labore, qui iure consequatur, alias expedita minus optio libero quas ipsam voluptatum perspiciatis laudantium repudiandae, velit suscipit incidunt deleniti officia animi. Iure recusandae fugiat accusamus amet omnis, optio veritatis pariatur eligendi incidunt officiis. Accusamus earum commodi cumque placeat optio enim amet obcaecati vel voluptatibus. Iusto, sint, soluta.</p>
-			<p>Labore odit, a dolores est beatae, non dolore quam voluptas eligendi ea atque molestiae quos, qui voluptate. Ex aut eum repellat temporibus dolore blanditiis, autem distinctio explicabo excepturi neque numquam doloremque aperiam in vel, laboriosam libero ullam fuga quasi incidunt cupiditate quo iusto. Illum natus voluptatibus nesciunt aperiam, doloribus accusamus.</p>
-			<p>Alias saepe similique optio architecto eveniet quisquam repudiandae quis voluptate, minus autem unde voluptatibus mollitia esse nobis. Accusantium voluptatum vero, quae praesentium, rem minima nihil minus veniam perferendis reprehenderit consequatur enim sunt porro, possimus illum delectus similique in cumque modi. Eaque suscipit, et consectetur expedita quam obcaecati. Excepturi, minus, aut?</p>
-			<p>Dolore temporibus, quia dicta. Ducimus reiciendis unde eaque enim recusandae illum error optio harum labore modi corporis, fuga est qui cupiditate, laborum sequi magni fugit maiores earum voluptatibus nesciunt incidunt? Amet deleniti saepe hic temporibus adipisci, consequatur consequuntur dicta error, dolores labore cupiditate quis eius ea quidem nostrum fugit repellat?</p>
-			<p>Illo sint ut neque distinctio, vel quia veritatis animi nulla ab, rerum rem eaque, fuga! Voluptate nisi praesentium inventore! Voluptate alias minima, minus praesentium quas sed at cum delectus tempore, temporibus quasi! Nemo suscipit eum neque aliquam, a animi dolorem natus, quo vero eveniet minima earum impedit, cum fugit magni?</p>
-			<p>Eaque esse labore, ea ipsa! Nisi temporibus iste iusto, praesentium voluptate laborum expedita ipsa ad vero veritatis nihil blanditiis tempora repellat molestiae. Esse ipsum nihil, sunt quas dicta non eius nemo facilis! Veritatis voluptatum id accusantium nemo sit. Quam est doloribus asperiores quia itaque culpa possimus soluta sapiente, voluptatibus iste.</p>
-			<p>Maiores ab placeat tempora, aliquam dolore nisi error corporis commodi minima similique aperiam voluptatem quis iure, molestiae consequatur natus fugiat ratione sed perspiciatis deserunt nam deleniti, explicabo! Soluta quisquam ea temporibus sapiente voluptas omnis, debitis quo ab nam tempore fuga deleniti laboriosam similique consectetur rerum architecto, fugit ducimus corporis accusantium!</p>
-			<p>Voluptatem provident esse, ullam tenetur laboriosam, sit laudantium molestiae quis ipsam in ut earum minima porro dolores quam! Sapiente, iure, saepe. Fuga nisi error deserunt nesciunt placeat sequi delectus velit, odit neque pariatur nobis ipsum ex laborum ullam at eos! Aperiam deleniti omnis ullam dolorum aliquam, recusandae perspiciatis! Quae, quod.</p>
+			<div id="content">
+				<p class="message" v-for="item in content"><span v-bind:style="{color: item.color}">{{item.author}}</span>{{item.message}}</p>
+			</div>
+			<div class="input">
+				<input :placeholder="status" ref="chatInput" @keyup.enter="sendMessage" v-model="message" type="text" id="input"/>
+			</div>
 		</div>
 	</div>
 </template>
+
+<script>
+	export default {
+		data(){
+			return {
+				status: '',
+				disabled: true,
+				myColor: false,
+				myName: false,
+				content: [],
+				message: '',
+				autofocus: false,
+
+			}
+		},
+		computed:{
+			chatInput() { 
+				return this.$refs.chatInput
+			},
+			connection() {
+				return new WebSocket('ws://192.168.8.119:1337')
+			},
+		},
+		watch:{
+			disabled(){
+				this.scrollToBottom();
+			},
+			content(){
+				setTimeout(this.scrollToBottom, 100)
+				this.scrollToBottom();
+			},
+			status(){
+				this.scrollToBottom();
+			}
+		},
+		methods: {
+			addMessage(author_, message_, color_, dt_) {
+				const vm = this;
+		        this.content.push({
+		        	color: color_, 
+		        	author: author_, 
+		        	message: '@' +
+		             + (dt_.getHours() < 10 ? '0' + dt_.getHours() : dt_.getHours()) + ':'
+		             + (dt_.getMinutes() < 10 ? '0' + dt_.getMinutes() : dt_.getMinutes())
+		             + ': ' + message_
+		        });
+		    },
+		    sendMessage(){
+		    	const vm = this;
+		    	var msg = vm.message;
+	            if (!msg) {
+	                return;
+	            }
+
+	            vm.connection.send(msg);
+	            vm.message = '';
+	            // disable the input field to make the user wait until server
+	            // sends back response
+	            vm.disabled = true;
+
+	            // we know that the first message sent from a user their name
+	            if (vm.myName === false) {
+	                vm.myName = msg;
+	            }
+		    },
+		    scrollToBottom(){
+				var container = this.$el.querySelector("#content");
+				container.scrollTop = container.scrollHeight;
+		    }
+
+		},
+		created() {
+			const vm = this;
+			window.WebSocket = window.WebSocket || window.MozWebSocket;
+			vm.connection.onopen = function () {
+				vm.status = 'Choose name'
+				vm.disabled = false
+			}; 
+			vm.connection.onmessage = function (message) {
+				try {
+					var json = JSON.parse(message.data);
+				} catch (e) {
+					console.log('This doesn\'t look like a valid JSON: ', message.data);
+					return;
+				}
+
+				// NOTE: if you're not sure about the JSON structure
+				// check the server source code above
+				if (json.type === 'color') { // first response from the server with user's color
+					vm.myColor = json.data;
+					vm.status = vm.myName //.css('color', myColor);
+					vm.disabled = false;
+					// from now user can start sending messages
+				} else if (json.type === 'history') { // entire message history
+					// insert every single message to the chat window
+					for (var i=0; i < json.data.length; i++) {
+						vm.addMessage(json.data[i].author, json.data[i].text,
+								   json.data[i].color, new Date(json.data[i].time));
+					}
+				} else if (json.type === 'message') { // it's a single message
+					vm.disabled = false;
+					vm.addMessage(json.data.author, json.data.text,
+							   json.data.color, new Date(json.data.time));
+				} else {
+					console.log('Hmm..., I\'ve never seen JSON like this: ', json);
+				}
+			};
+		}
+
+	}
+</script>
 
 <style lang="scss">
 	.chat{
@@ -37,8 +144,33 @@
 		background-color: #2c2c2c;
 		font-weight: 400;
 		flex: 1 0;
+		display: flex;
+		flex-direction: column;
 		&::-webkit-scrollbar { 
 			display: none;
 		}
+	}
+	.message{
+		word-wrap: break-word;
+	}
+	#content{
+		flex: 1;
+		box-sizing: border-box;
+		padding: 10px;
+		overflow-y: scroll;
+	}
+	.input{
+		padding-top: 3px;
+		background: #242323;
+	}
+	#input{
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		color: #fff;
+		padding: 10px;
+		border: none;
+		background: #2c2c2c;
+		outline: #ef5777;
 	}
 </style>

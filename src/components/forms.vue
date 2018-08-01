@@ -10,7 +10,7 @@
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input v-model="buyPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
+							<p class="input__contaner --price"><input onClick="this.select();" v-model="buyPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
 						<p>TOTAL = <span>{{buyTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
@@ -19,7 +19,7 @@
 								<label :class="{active: picked == item.blockAmount}" class="expries " :for="item.title">{{item.title}}</label>
 							</span>
 						</p>
-						<p class="button-container"><button @click.prevent="postOrder(token1, token2, buyAmount, buyTotal)" class="button">PLACE BUY ORDER</button></p>
+						<p class="button-container"><button @click.prevent="postOrder(token1, token2, buyAmount, buyTotal, 1)" class="button">PLACE BUY ORDER</button></p>
 					</form>
 				</div>
 			</v-tab>
@@ -33,7 +33,7 @@
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input v-model="sellPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
+							<p class="input__contaner --price"><input onClick="this.select();" v-model="sellPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
 						<p>TOTAL = <span>{{sellTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
@@ -41,7 +41,7 @@
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
 								<label :class="{active: picked == item.blockAmount}" class="expries " :for="item.title">{{item.title}}</label>
 							</span>
-						<p class="button-container"><button @click.prevent="postOrder(token2, token1, sellAmount, sellTotal)" class="button sell">PLACE SELL ORDER</button></p>
+						<p class="button-container"><button @click.prevent="postOrder(token2, token1, sellTotal, sellAmount, 0)" class="button sell">PLACE SELL ORDER</button></p>
 					</form>
 				</div>	
 			</v-tab>
@@ -59,7 +59,7 @@
 								:class="{active: depositToken == item.token}"  
 								class="expries " 
 								:for="item.name">{{item.name}}</label></span>[choose currency]</p>
-								<p class="input__contaner --amount"><input v-model="depositAmount" placeholder="amount" type="number"><button v-on:click="deposit" class="btn btn_deposit">SENT</button></p>
+								<p class="input__contaner --amount"><input v-model="depositAmount" placeholder="amount" type="number"><button v-on:click="deposit" class="btn btn_deposit">SEND</button></p>
 						</div>
 					</form>
 					<form class="forms__box form__manage">
@@ -73,12 +73,27 @@
 								:class="{active: withdrawToken == item.token}" 
 								class="expries" 
 								:for="item.token">{{item.name}}</label></span>[choose currency]</p>
-							<p class="input__contaner --amount"><input v-model="withdrawAmount" placeholder="amount" type="number"><button v-on:click="withdraw" class="btn btn_deposit">SENT</button></p>
+							<p class="input__contaner --amount"><input v-model="withdrawAmount" placeholder="amount" type="number"><button v-on:click="withdraw" class="btn btn_deposit">SEND</button></p>
 						</div>
 					</form>
 				</div>
 			</v-tab>
 		</vue-tabs>
+
+		<alert ctx="error" :title="errorTitle" v-show="popup">
+			<div class="reslove-container">
+				<div class="reslove">
+					<div>PLEASE CHECK:</div>
+					<ul>
+						<li>* BALANCE</li>
+						<li>* ORDER AMOUNT</li>
+						<li>* METAMASK CONNECTION</li>
+					</ul>
+				</div>
+
+				<div class="support-btn">SUPPORT</div>
+			</div>
+		</alert>
 	</div>
 </template>
 
@@ -87,7 +102,7 @@
 	import provider from '../provider.js'
 	import exchange from '../exchange.js'
 	import settings from '../settings.json'
-	import ethjs from 'ethereumjs-util'
+	import alert from "./alert.vue"
 
 	const web3 = provider.connectWeb3();
 
@@ -98,9 +113,9 @@
 				settings: settings,
 				depositToken: this.pair.tokens[0],
 				withdrawToken: this.pair.tokens[0],
-				buyAmount: 0,
+				buyAmount: '',
 				buyPrice: '',
-				sellAmount: 0,
+				sellAmount: '',
 				sellPrice: '',
 				depositAmount: null,
 				withdrawAmount: null,
@@ -115,7 +130,14 @@
 
 				picked: '',
 
+				popup: false,
+
+				error: '',
+				errorTitle: ''
 			}
+		},
+		components: {
+			alert,
 		},
 		computed: {
 			blockSpeed(){ return this.settings.blockSpeed},
@@ -182,6 +204,9 @@
 			from: String,
 		},
 		methods: {
+			closePopup(){
+				this.popup = false
+			},
 			getPrice(){
 				const vm = this;
 				try {
@@ -213,7 +238,7 @@
 					exchange.withdrawToken(this.contract, this.from, this.withdrawToken, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
 				}
 			},
-			postOrder(tokenGet, tokenGive, amountGet, amountGive){
+			postOrder(tokenGet, tokenGive, amountGet, amountGive, orderType){
 				const vm = this;
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
@@ -229,8 +254,21 @@
 						"amountGive": parseFloat(amountGive) * 10**18,
 						"expires": expires,
 						"nonce": parseFloat(nonce),
-						"sig": vm.sign
-					}).then(res => console.log(res)).catch(err => console.log(err))
+						"sig": vm.sign,
+						"orderType": orderType
+					})
+					.then(res => {
+						if (res.status !== 200) {
+							this.popup = true;
+							this.errorTitle = "INVALID ORDER ( Error " + res.status + ")"
+						}
+					})
+					.catch(err => {
+						console.log(err)
+						vm.error = err.body; 
+						vm.popup = true
+						vm.errorTitle = "INVALID ORDER (Error " + err.status + ")"
+					})
 				})()
 			},
 
@@ -250,6 +288,27 @@
 </script>
 
 <style lang="scss">
+	.reslove-container{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.support-btn{
+		width: 245px;
+		background-color: #0be881;
+		text-align: center;
+		box-sizing: border-box;
+		padding: 12px;
+		cursor: pointer;
+		color: #474747;
+	}
+	.reslove{
+		font-size: 12px;
+		ul{
+			list-style-type: none;
+			padding: 0
+		}
+	}
 	.btn{
 		background-color: #0be881;
 		color: #474747;
@@ -330,17 +389,32 @@
 			outline: none;
 		}
 	}
+	.form__manage,
+	.form__buy{
+		.expries{
+			&.active{
+				color: #0be881;
+			}
+		}
+	}
+	.form__sell{
+		.expries{
+			&.active{
+				color: #ff5e57;
+			}
+		}
+	}
 	.expries{
 		margin: 5px;
 		cursor: pointer;
 		text-transform: uppercase;
-		&.active{
-			color: #0be881;
-		}
 	}
 	.button-container{
 		text-align: center;
 		margin-top: 30px;
+	}
+	.btn_deposit{
+		font-weight: 700;
 	}
 	.button{
 		background-color: #0be881;
