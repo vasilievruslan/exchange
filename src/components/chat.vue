@@ -7,6 +7,7 @@
 			</div>
 			<div class="input">
 				<input :placeholder="status" ref="chatInput" @keyup.enter="sendMessage" v-model="message" type="text" id="input"/>
+				<button @click.prevent="sendMessage" class="send-btn"><img src="../assets/send-btn.svg" alt=""></button>
 			</div>
 		</div>
 	</div>
@@ -162,6 +163,7 @@
 	.input{
 		padding-top: 3px;
 		background: #242323;
+		position: relative;
 	}
 	#input{
 		display: block;
@@ -172,5 +174,18 @@
 		border: none;
 		background: #2c2c2c;
 		outline: #ef5777;
+		padding-right: 51px;
+	}
+	.send-btn{
+		display: block;
+		background-color: transparent;
+		border: none;
+		position: absolute;
+		right: 10px;
+		top: calc(50% + 3px);
+		transform: translateY(-50%);
+		z-index: 2;
+		cursor: pointer;
+		outline: none;
 	}
 </style>

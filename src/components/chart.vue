@@ -42,12 +42,14 @@
 				vm.$http.get(`https://exapi1.herokuapp.com/v0.1/priceChart?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(res => {
 					var data = res.data._items
 					data.forEach(function(element){
-						element.volume = 1
-						element.value = 1
+						element.volume = element.volume / 10**18;
+						// element.value = 1
 						var newDate = new Date(element.date)
 						element.date = newDate;
 					})
 					vm.chartData = data;
+					// console.log(vm.chartData);
+
 					vm.chart = AmCharts.makeChart("chartdiv", {
 						"hideCredits": true,
 						"type": "stock",
@@ -91,30 +93,16 @@
 							"valueTextRegular": undefined,
 							"periodValueTextComparing": "[[percents.value.close]]%"
 						},
-						"listeners": [ {
-						    "event": "rendered",
-						    "method": function( event ) {
-						      vm.chart.mouseDown = false;
-						      vm.chart.containerDiv.onmousedown = function() {
-						        vm.chart.mouseDown = true;
-						      }
-						      vm.chart.containerDiv.onmouseup = function() {
-						        vm.chart.mouseDown = false;
-						      }
-						    }
-						  } ],
-						"panels": [
-							{
-								"title": "Value",
-								"showCategoryAxis": false,
-								"percentHeight": 70,
-								"valueAxes": [{
-									"labelsEnabled": false,
-									"id": "v1",
-									"dashLength": 5
-								}
-							],
-
+						"panels": [{
+							// 	"title": "Value",
+							// 	"showCategoryAxis": false,
+							// 	"percentHeight": 70,
+							"valueAxes": [{
+								"labelsEnabled": false,
+								"id": "v1",
+								"dashLength": 5
+							}],
+							"showCategoryAxis": false,
 							"categoryAxis": {
 								"parseDates": true,
 								"dashLength": 5,
@@ -144,10 +132,14 @@
 									"proCandlesticks": true
 								}
 							],
-
 							"stockLegend": {
-								"valueTextRegular": undefined,
-								"periodValueTextComparing": "[[percents.value.close]]%"
+								// "useGraphSettings": true,
+								"markerType": "none",
+								"fontSize": 14,
+								"marginLeft": 0,
+								"marginBottom": 10,
+								"autoMargins": false
+
 								}
 							}, 
 							{
@@ -190,7 +182,8 @@
 						},
 						"chartScrollbarSettings": {
 							"graph": "g1",
-							"usePeriod": "10mm",
+							"graphType": "line",
+   							"usePeriod": "mm"
 							// "position": "top"
 						},
 						"periodSelector": {
@@ -199,12 +192,12 @@
 							"dateFormat": "HH:NN DD-MM-YYYY",
 							"position": "top",
 							"periods": [{
-								"period": "mm",
-								"count": 60,
+								"period": "hh",
+								"count": 1,
 								"label": "1H"
 							}, {
-								"period": "hh",
-								"count": 24,
+								"period": "DD",
+								"count": 1,
 								"label": "1D"
 							}, {
 								"period": "DD",
@@ -215,6 +208,8 @@
 						}
 					});
 
+					console.log(vm.chart)
+
 				})
 				
 			},
@@ -223,19 +218,21 @@
 				vm.$http.get(`https://exapi1.herokuapp.com/v0.1/priceChart?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&page=0`).then(res => {
 					var data = res.data._items
 					data.forEach(function(element){
-						element.volume = 1
-						element.value = 1
+						element.volume = element.volume / 10**18;
+						element.value = element.volume / 10**18;
 						var newDate = new Date(element.date)
 						element.date = newDate;
 					})
 					vm.chartData = data;
 
 					if (String(vm.chart.dataSets[0].dataProvider[vm.chart.dataSets[0].dataProvider.length - 1].date) !== String(vm.chartData[vm.chartData.length - 1].date)) {
-						vm.chart.dataSets[0].dataProvider.push(vm.chartData[vm.chartData.length - 1])
+						vm.chart.dataSets[0].dataProvider = vm.chartData
 						vm.chart.validateData()
-
 					}
-					// vm.chart.dataSets[0].dataProvider = vm.chartData
+					// console.locationg(vm.chartData)
+
+					// vm.chart.dataSets[0].dataProvider = vm.chartData;
+					// vm.chart.validateData()
 
 				})
 

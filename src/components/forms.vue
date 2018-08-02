@@ -6,11 +6,11 @@
 					<form class="forms__box form__buy">
 						<div class="form__buy__amount">
 							<p class="input__title">AMOUNT</p>
-							<p class="input__contaner --amount"><input v-model="buyAmount" placeholder="amount" type="number"><span class="symbol-toolkit">{{pair.symbols[0]}}</span></p>
+							<p class="input__contaner --amount"><input v-model="buyAmount" placeholder="amount_" type="number"><span class="symbol-toolkit">{{pair.symbols[0]}}</span></p>
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input onClick="this.select();" v-model="buyPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
+							<p class="input__contaner --price"><input onClick="this.select();" v-model="buyPrice" placeholder="price_" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
 						<p>TOTAL = <span>{{buyTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
@@ -29,17 +29,17 @@
 					<form class="forms__box form__sell">
 						<div class="form__buy__amount">
 							<p class="input__title">AMOUNT</p>
-							<p class="input__contaner --amount"><input v-model="sellAmount" placeholder="amount" type="number"><span class="symbol-toolkit">{{pair.symbols[0]}}</span></p>
+							<p class="input__contaner --amount"><input v-model="sellAmount" placeholder="amount_" type="number"><span class="symbol-toolkit">{{pair.symbols[0]}}</span></p>
 						</div>
 						<div class="form__buy__price">
 							<p class="input__title">PRICE</p>
-							<p class="input__contaner --price"><input onClick="this.select();" v-model="sellPrice" placeholder="price" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
+							<p class="input__contaner --price"><input onClick="this.select();" v-model="sellPrice" placeholder="price_" type="number"><span class="symbol-toolkit">{{pair.symbols[1]}}</span></p>
 						</div>
 						<p>TOTAL = <span>{{sellTotal}}</span> {{pair.symbols[1].toUpperCase()}}</p>
 						<p>CHOOSE EXPIRES: 
 							<span v-for="item in expires">
 								<input class="radio-btn" type="radio" :id="item.title" :value="item.blockAmount" v-model="picked">
-								<label :class="{active: picked == item.blockAmount}" class="expries " :for="item.title">{{item.title}}</label>
+								<label :class="{active: picked == item.blockAmount}" class="expries" :for="item.title">{{item.title}}</label>
 							</span>
 						<p class="button-container"><button @click.prevent="postOrder(token2, token1, sellTotal, sellAmount, 0)" class="button sell">PLACE SELL ORDER</button></p>
 					</form>
@@ -59,7 +59,7 @@
 								:class="{active: depositToken == item.token}"  
 								class="expries " 
 								:for="item.name">{{item.name}}</label></span>[choose currency]</p>
-								<p class="input__contaner --amount"><input v-model="depositAmount" placeholder="amount" type="number"><button v-on:click="deposit" class="btn btn_deposit">SEND</button></p>
+								<p class="input__contaner --amount"><input v-model="depositAmount" placeholder="amount_" type="number"><button v-on:click="deposit" class="btn btn_deposit">SEND</button></p>
 						</div>
 					</form>
 					<form class="forms__box form__manage">
@@ -73,7 +73,7 @@
 								:class="{active: withdrawToken == item.token}" 
 								class="expries" 
 								:for="item.token">{{item.name}}</label></span>[choose currency]</p>
-							<p class="input__contaner --amount"><input v-model="withdrawAmount" placeholder="amount" type="number"><button v-on:click="withdraw" class="btn btn_deposit">SEND</button></p>
+							<p class="input__contaner --amount"><input v-model="withdrawAmount" placeholder="amount_" type="number"><button v-on:click="withdraw" class="btn btn_deposit">SEND</button></p>
 						</div>
 					</form>
 				</div>
@@ -318,6 +318,10 @@
 		text-align: center;
 		outline: none;
 		cursor: pointer;
+
+		&:active{
+			box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+		}
 	}
 	.radio-btn{
 		display: none;
@@ -428,6 +432,10 @@
 		outline: none;
 		cursor: pointer;
 		font-weight: 700;
+
+		&:active{
+			box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+		}
 		&.sell{
 			background-color: #ff5e57;
 			color: #fff;

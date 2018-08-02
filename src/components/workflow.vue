@@ -25,7 +25,7 @@
 					<v-tab title="PRICE CHART">
 						<chart :pair="pair"></chart>
 					</v-tab>
-					<v-tab title="DEPTH">
+					<v-tab title="DEPTH (SOON)">
 						<depth></depth>
 					</v-tab>
 				</vue-tabs>
@@ -72,6 +72,7 @@
 				pairs: settings.pairs,
 				contract: null,
 				from: null,
+				tabName: '',
 			}
 		},
 		computed: {

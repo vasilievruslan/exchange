@@ -18,7 +18,7 @@
 						<div class="od-title">AMOUNT</div>
 						<div class="od-amount">{{orderData.orderFills}} {{pair.symbols[0].toUpperCase()}}</div>
 						<div class="od-title">PRICE</div>
-						<div class="od-amount">{{orderData.price}}</div>
+						<div class="od-amount">{{orderData.price}} {{pair.symbols[1].toUpperCase()}}</div>
 					</div>
 					<div class="orderbook-col">
 						<div class="od-title">EXPIRES</div>
@@ -37,9 +37,9 @@
 				</div>
 			</form>
 		</div>
-		<div v-if="canselForm == true" class="orederbook__form">
+		<div v-if="cancelForm == true" class="orederbook__form">
 			<div class="orederbook__form-title">
-				<div>CANSEL</div>
+				<div>CANCEL</div>
 				<div @click.prevent="closeForm" class="close-btn">
 					<svg width="10" height="10" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 10 10">
 						<g transform="matrix(1,0,0,1,-351,-64)">
@@ -53,21 +53,21 @@
 				<div class="orderbook-item flex-item">
 					<div class="orderbook-col">
 						<div class="od-title">AMOUNT</div>
-						<div class="od-amount">{{canselOrderData.orderBody.amount}} {{pair.symbols[0].toUpperCase()}}</div>
+						<div class="od-amount">{{cancelOrderData.orderBody.amount}} {{pair.symbols[0].toUpperCase()}}</div>
 						<div class="od-title">PRICE</div>
-						<div class="od-amount">{{canselOrderData.orderBody.price}}</div>
+						<div class="od-amount">{{cancelOrderData.orderBody.price}} {{pair.symbols[1].toUpperCase()}}</div>
 					</div>
 					<div class="orderbook-col">
 						<div class="od-title">EXPIRES</div>
-						<div class="od-amount">{{canselOrderData.expires}}</div>
+						<div class="od-amount">{{cancelOrderData.expires}}</div>
 					</div>
 				</div>
 				<div class="orderbook-item">
-					<button class="buy-btn cansel" @click="canselOrder">CANSEL</button>
+					<button class="buy-btn cancel" @click="cancelOrder">cancel</button>
 				</div>
 			</form>
 		</div>
-		<vue-tabs v-if="buyFrom !== true && canselForm !== true">
+		<vue-tabs v-if="buyFrom !== true && cancelForm !== true">
 			<v-tab title="ORDERBOOK">
 				<div class="orederbook-wrap">
 					<div class="orederbook__table orederbook__titles row">
@@ -81,19 +81,19 @@
 								<div class="col value"><span class="value-bar"></span></div>
 								<div class="col AMOUNT">{{(item.orderFills / 10**18).toFixed(4)}}</div>
 								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
-								<div class="col FIAT">$</div>
+								<div class="col FIAT">${{((item.orderFills / 10**18) * fiat).toFixed(2)}}</div>
 							</div>
 						</div>
 						<div class="orederbook__spread">
 							<div class="spread">spread</div>
-							<div class="spread-val">0.00123</div>
+							<div class="spread-val">-</div>
 						</div>
 						<div class="orederbook__table sell">
 							<div v-for="(item, index) in listSell" @click="doOrder(index, 'buy')" :data-hash="item.hash" class="sell row">
 								<div class="col value"><span class="value-bar"></span></div>
 								<div class="col AMOUNT">{{(((item.orderFills * item.amountGive) / item.amountGet) / 10**18).toFixed(4)}}</div>
 								<div class="col PRICE">{{(item.amountGet / item.amountGive).toFixed(4)}}</div>
-								<div class="col FIAT">$</div>
+								<div class="col FIAT">${{((((item.orderFills * item.amountGive) / item.amountGet) / 10**18) * fiat).toFixed(2)}}</div>
 							</div>
 						</div>
 					</div>
@@ -112,7 +112,7 @@
 								<div class="col value"><span class="value-bar"></span></div>
 								<div class="col AMOUNT">{{(item.amount / 10**18).toFixed(4)}}</div>
 								<div class="col PRICE">{{(item.price).toFixed(4)}}</div>
-								<div class="col FIAT">$</div>
+								<div class="col FIAT">${{((item.amount / 10**18) * fiat).toFixed(2)}}</div>
 							</div>
 						</div>
 					</div>
@@ -149,13 +149,14 @@
 				tokenGiveAddress: this.pair.tokens[1],
 				personalOrders: null,
 				buyFrom: false,
-				canselForm: false,
+				cancelForm: false,
 				order: {},
 				orderData: {},
-				canselOrderData: {},
+				cancelOrderData: {},
 				popup: false,
 				error: '',
 				txhash: '',
+				fiat: null,
 			}
 		},
 		computed: {
@@ -165,7 +166,7 @@
 			resource(){
 				return this.$resource('https://exapi1.herokuapp.com/v0.1/{type}?tget={tokenGet}&tgive={tokenGive}&page=0')
 			},
-			input(){
+			input(){	
 				return this.$refs
 			}
 		},
@@ -267,7 +268,7 @@
 			},
 			closeForm(){
 				this.buyFrom = false;
-				this.censelForm = false;
+				this.cancelForm = false;
 			},
 			getOreders() {
 				const vm = this;
@@ -302,6 +303,13 @@
 					console.log(err)
 				});
 			},
+			getFiat(){
+				const vm = this;
+				this.$http.get(`http://coincap.io/page/${vm.pair.symbols[0].toUpperCase()}`).then(res => {
+					console.log(res)
+					vm.fiat = res.body.price_usd
+				})
+			},
 			toCancelOrder(i){
 				const vm = this;
 
@@ -317,27 +325,28 @@
 					}
 				}
 				vm.personalOrders[i].orderBody
-				vm.canselOrderData = vm.personalOrders[i];
+				vm.cancelOrderData = vm.personalOrders[i];
 
-				vm.canselForm = true;
+				vm.cancelForm = true;
 
 			},
-			canselOrder: async function(i){
+			cancelOrder: async function(i){
 				const vm = this;
 
-				let data = this.canselOrderData;
+				let data = this.cancelOrderData;
 				let rsv = exchange.rsv(web3, data.sig);
 				await exchange.cancelOrder(vm.contract, vm.from, data.tokenGet, data.amountGet, data.tokenGive, data.amountGive, data.expires, data.nonce, rsv.v, rsv.r, rsv.s, function(h){
 					vm.txhash = String(h);
 					vm.popup = true
 				})
 
-				vm.canselForm = false;
+				vm.cancelForm = false;
 			},
 	    },
 	    created() {
 	    	var vm = this;
 	    	vm.getOreders()
+			vm.getFiat();
 			setInterval(function () {
 				vm.getOreders();
 				vm.getPersonalOreders();
@@ -444,7 +453,7 @@
 			background-color: #ff5e57;
 		}
 
-		&.cansel{
+		&.cancel{
 			background-color: #ef5777;
 			color: #ffffff;
 		}

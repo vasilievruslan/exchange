@@ -49,7 +49,7 @@
 					<img src="../assets/ledger.svg" alt="">
 					<toolkit class="ledger-toolkit">
 						LEDGER <br>
-						Avaliable soon.
+						Available soon.
 					</toolkit>
 				</div>
 				<div class="apps__item metamask__logo">
@@ -140,7 +140,7 @@
 				try {
 					var successful = document.execCommand('copy');
 					var msg = successful ? 'successful' : 'unsuccessful';
-					alert('Address was copied ' + msg);
+					// alert('Address was copied ' + msg);
 				} catch (err) {
 					console.log(err)
 				}
@@ -202,9 +202,10 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			padding-bottom: 11px;
 			a{
 				background-color: #0be881;
-				padding: 14px 20px;
+				padding: 12px 20px;
 				color: #474747;
 				border-radius: 2px;
 				text-decoration: none;
@@ -231,7 +232,7 @@
 			box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
 			background-color: #242323;
 			color: #919191;
-			padding: 11px 14px;
+			padding: 11px 9px;
 			border: none;
 			box-sizing: border-box;
 			display: block;
@@ -247,6 +248,10 @@
 			padding: 7px;
 			cursor: pointer;
 			outline: none;
+
+			&:active{
+				box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.5);
+			}
 
 			img{
 				display: block;
