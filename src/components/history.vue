@@ -1,5 +1,10 @@
 <template>
 	<div class="window history">
+		<transition name="fade">
+			<div v-show="preLoader" class="pre-loader">
+				<img width="128px" src="/preloader.svg" alt="">
+			</div>
+		</transition>
 		<vue-tabs>
 			<v-tab title="TRADE HISTORY">
 				<div class="history__table">
@@ -38,9 +43,6 @@
 </template>
 
 <script>
-
-
-
 	export default{
 		name: 'histiry',
 		data: function () {
@@ -49,6 +51,7 @@
 				personalHistoryData: [],
 				tokenGetAddress: this.pair.tokens[0],
 				tokenGiveAddress: this.pair.tokens[1],
+				preLoader: true,
 			}
 		},
 		props: {
@@ -100,6 +103,8 @@
 
 					vm.historyData = data;
 
+					vm.preLoader = false;
+
 
 				}, err => {
 					console.log(err)
@@ -117,6 +122,30 @@
 </script>
 
 <style lang="scss">
+	@keyframes rotate{
+		0%{
+			transform: rotate(0deg);
+		}
+		100%{
+			transform: rotate(360deg);
+		}
+	}
+	.pre-loader{
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: rgba(0,0,0,0.5);
+		width: 100vw;
+		height: 100vh;
+		z-index: 5;
+
+		img{
+			animation: rotate 3s cubic-bezier(0.29, 0.9, 0.39, 0.93) infinite;
+		}
+	}
 	.history__row{
 		.price{
 			display: flex;

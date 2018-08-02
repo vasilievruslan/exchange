@@ -15,3 +15,6 @@ module: {
       scss: 'style!css!sass'
     }
   }
+  output: {
+    publicPath: './'
+  }

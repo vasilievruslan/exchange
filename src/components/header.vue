@@ -54,6 +54,8 @@
 				</div>
 				<div class="apps__item metamask__logo">
 					<i class="ico" :class="metamask" alt=""></i>
+
+
 					<toolkit class="metamask-toolkit">
 						<div v-if="metamask == 'metamask'" class="metamask-continer">
 							<div class="metamask-copy">
@@ -62,6 +64,9 @@
 							</div>
 							<div class="indicators">
 								<div class="condition --green">ACTIVE</div>
+								<transition name="fade">
+									<div v-if="copied">COPIED</div>
+								</transition>
 								<div class="network --purple">{{network.toUpperCase()}}</div>
 							</div>
 						</div>
@@ -114,6 +119,8 @@
 
 				metamaskToolkit: false,
 				ladgerToolkit: false,
+
+				copied: false
 			}
 		},
 		computed: {
@@ -135,12 +142,19 @@
 		},
 		methods: {
 			copy(){
+				const vm = this;
 				let input = document.querySelector('#address')
 				input.select()
 				try {
 					var successful = document.execCommand('copy');
 					var msg = successful ? 'successful' : 'unsuccessful';
 					// alert('Address was copied ' + msg);
+					vm.copied = true;
+
+					setTimeout(function(){
+						vm.copied = false;
+					}, 3000)
+
 				} catch (err) {
 					console.log(err)
 				}
@@ -183,7 +197,12 @@
 </script>
 
 <style lang="scss">
-	
+	.fade-enter-active, .fade-leave-active {
+		transition: opacity .3s;
+	}
+	.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+		opacity: 0;
+	}
 	.toolkit{
 		position: absolute;
 		right: 0;
