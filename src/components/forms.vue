@@ -94,6 +94,12 @@
 				<div class="support-btn">SUPPORT</div>
 			</div>
 		</alert>
+		<alert ctx="transaction" title="TRANSACTION" v-show="tx">
+			<div class="copy-input">
+				<div class="container"><input id="hash" ref="hash" v-model="txhash" type="text"><button @click.stop.prevent="copyHash" class="copy"><img src="../assets/copy-ico.svg" alt=""></button></div>
+				<div class="etherscan"><a target="_blank" :href="txlink">VIEW ON ETHERSCAN</a></div>
+			</div>
+		</alert>
 	</div>
 </template>
 
@@ -133,13 +139,17 @@
 				popup: false,
 
 				error: '',
-				errorTitle: ''
+				errorTitle: '',
+
+				tx: false,
+				txhash: '',
 			}
 		},
 		components: {
 			alert,
 		},
 		computed: {
+			txlink(){ return `${settings.network.etherscan}tx/${this.txhash}`},
 			blockSpeed(){ return this.settings.blockSpeed},
 			expires(){
 				return [
@@ -205,7 +215,8 @@
 		},
 		methods: {
 			closePopup(){
-				this.popup = false
+				this.popup = false;
+				this.tx = false;
 			},
 			getPrice(){
 				const vm = this;
@@ -217,15 +228,21 @@
 				}
 			},
 			deposit(e) {
-				const vueSelf = this
+				const vm = this
 				e.preventDefault();
 				if (this.depositToken == '0x0000000000000000000000000000000000000000') {
-					exchange.deposit(this.contract, this.from, this.depositAmount * 10**18).then(res => alert(res), err => console.log(err))
+					exchange.deposit(this.contract, this.from, this.depositAmount * 10**18, function(h){
+						vm.txhash = String(h);
+						vm.tx = true;
+					}).then(res => console.log(res), err => console.log(err))
 				}else{
 					(async function () {
-						const contract = exchange.initContract(web3, settings.tokenAbi, vueSelf.depositToken)
+						const contract = exchange.initContract(web3, settings.tokenAbi, vm.depositToken)
 						console.log(contract)
-						await exchange.depositToken(vueSelf.contract, contract, vueSelf.from, vueSelf.spender, vueSelf.depositToken, vueSelf.depositAmount * 10**18).then(res => console.log(res), err => console.log(err))
+						await exchange.depositToken(vm.contract, contract, vm.from, vm.spender, vm.depositToken, vm.depositAmount * 10**18, function(h){
+							vm.txhash = String(h);
+							vm.tx = true;
+						}).then(res => console.log(res), err => console.log(err))
 					})()
 				}
 				
@@ -233,9 +250,15 @@
 			withdraw(e) {
 				e.preventDefault();
 				if (this.withdrawToken == '0x0000000000000000000000000000000000000000') {
-					exchange.withdraw(this.contract, this.from, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
+					exchange.withdraw(this.contract, this.from, this.withdrawAmount * 10**18, function(h){
+						vm.txhash = String(h);
+						vm.tx = true;
+					}).then(res => console.log(res), err => console.log(err))
 				}else{
-					exchange.withdrawToken(this.contract, this.from, this.withdrawToken, this.withdrawAmount * 10**18).then(res => console.log(res), err => console.log(err))
+					exchange.withdrawToken(this.contract, this.from, this.withdrawToken, this.withdrawAmount * 10**18, function(h){
+						vm.txhash = String(h);
+						vm.tx = true;
+					}).then(res => console.log(res), err => console.log(err))
 				}
 			},
 			postOrder(tokenGet, tokenGive, amountGet, amountGive, orderType){

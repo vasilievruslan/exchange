@@ -14,6 +14,7 @@
 </template>
 
 <script>
+	import settings from '../settings.json'
 	export default {
 		data(){
 			return {
@@ -32,7 +33,7 @@
 				return this.$refs.chatInput
 			},
 			connection() {
-				return new WebSocket('ws://192.168.8.119:1337')
+				return new WebSocket(settings.chat)
 			},
 		},
 		watch:{
@@ -89,6 +90,7 @@
 			vm.connection.onopen = function () {
 				vm.status = 'Choose name'
 				vm.disabled = false
+				console.log('conection is open')
 			}; 
 			vm.connection.onmessage = function (message) {
 				try {

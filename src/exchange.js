@@ -28,64 +28,68 @@ export default{
 	initContract: function (web3_, abi_, contractAddress_) {
 		return new web3_.eth.Contract(abi_, contractAddress_);
 	},
-	deposit: async function (contract_, from_, amount_) {
+	deposit: async function (contract_, from_, amount_, callback) {
 		let str;
 		await contract_.methods.deposit().send({from:from_, value:amount_},
 			function(err, hash){
 				if (!err){
 					str = hash;
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					callback(hash)
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 
 		return await str;
 	},
-	withdraw: async function (contract_, from_, amount_) {
+	withdraw: async function (contract_, from_, amount_, callback) {
 		let str;
 		await contract_.methods.withdraw(amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash;
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					callback(hash);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		return await str;
 	},
-	depositToken: async function (contract_, tokenContract_, from_, spender_, token_, amount_) {
+	depositToken: async function (contract_, tokenContract_, from_, spender_, token_, amount_, callback) {
 		let str;
 		await tokenContract_.methods.approve(spender_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					str = hash
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		await contract_.methods.depositToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 					str = hash;
+					callback(hash);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		return await str
 	},
-	withdrawToken: async function (contract_, from_, token_, amount_) {
+	withdrawToken: async function (contract_, from_, token_, amount_, callback) {
 		let str;
 		await contract_.methods.withdrawToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 					str = hash;
+					callback(hash);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		return await str;
@@ -99,7 +103,7 @@ export default{
 						str = res;
 						// alert(res);
 					} else {
-						alert(err);
+						// alert(err);
 					}
 			});
 		} catch(e) {
@@ -113,9 +117,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash;
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		return await str;
@@ -134,8 +138,8 @@ export default{
 					console.log(hash)
 					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
-					alert('not ok')
+					// alert(err);
+					// alert('not ok')
 				}
 
 				callback(hash)
@@ -162,7 +166,7 @@ export default{
 					str = hash
 					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 				callback(hash)
 		});
@@ -182,7 +186,7 @@ export default{
 		let str;
 		var ecRecover = await web3_.eth.personal.ecRecover(hash_, sig_, 
 			function(err, res) {
-				alert('Test: ' + res);
+				// alert('Test: ' + res);
 				str = res;
 		});
 		return await str;
@@ -202,9 +206,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		return await str;
@@ -215,9 +219,9 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash
-					alert(`https://kovan.etherscan.io/tx/${hash}`);
+					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
-					alert(err);
+					// alert(err);
 				}
 		});
 		return await str;
@@ -228,10 +232,10 @@ export default{
 			function(error, event){
 				if (!error) {
 					str = event
-					alert(event.transactionHash);
-					alert('==============');
+					// alert(event.transactionHash);
+					// alert('==============');
 				} else {
-					alert(error);
+					// alert(error);
 				}
 		});
 		return await str;
