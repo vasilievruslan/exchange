@@ -16,7 +16,7 @@
 		"name": "Kovan",
 		"etherscan": "https://kovan.etherscan.io/"
 	},
-	"chat": "ws://167.99.200.35:8080",
+	"chat": "wss://167.99.200.35:8080",
 	"blockSpeed": 7.28,
 	"apiPort": 8000,
 	"eventsStartBlock": 7865321, 
