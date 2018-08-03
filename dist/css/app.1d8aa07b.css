@@ -768,7 +768,7 @@ body {
 	z-index: 5
 }
 
-.pre-loader img {
+.pre-loader__container img {
 	-webkit-animation: rotate 3s cubic-bezier(.29, .9, .39, .93) infinite;
 	animation: rotate 3s cubic-bezier(.29, .9, .39, .93) infinite
 }

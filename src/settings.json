@@ -879,16 +879,18 @@
 				"name":"eth/erc20",
 				"path":"eth_erc20",
 				"symbols": ["eth", "erc20"],
+				"fullName": ["Ethereum", "Erc20"],
 				"tokens": ["0x0000000000000000000000000000000000000000", "0xF022931dfcc5FaB6E9D13c68d9De55664be1c020"]
 			},{
 				"name":"eth/tmn",
 				"path":"eth_tmn",
 				"symbols": ["eth", "tmn"],
+				"fullName": ["Ethereum", "transmission"],
 				"tokens": ["0x0000000000000000000000000000000000000000", "0xa36161c7643ebb50410cb50ef7d365ca3850c281"]
 			},{
 				"name":"eth/opl",
 				"path":"eth_opl",
-				"symbols": ["eth", "opl"],
+				"fullName": ["Ethereum", "OnPlace"],
 				"tokens": ["0x0000000000000000000000000000000000000000", "0x18bf50ce6c14fbc001b757322d126a3939fcd7d7"]
 			}
 		]

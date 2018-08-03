@@ -305,9 +305,9 @@
 			},
 			getFiat(){
 				const vm = this;
-				this.$http.get(`http://coincap.io/page/${vm.pair.symbols[0].toUpperCase()}`).then(res => {
+				this.$http.get(`https://api.coinmarketcap.com/v1/ticker/${vm.pair.fullName[0]}/`).then(res => {
 					console.log(res)
-					vm.fiat = res.body.price_usd
+					vm.fiat = res.body[0].price_usd
 				})
 			},
 			toCancelOrder(i){
