@@ -132,6 +132,7 @@
 		flex: 1 0 40%;
 		display: flex;
 		flex-direction: column;
+		overflow: scroll;
 	}
 	.chat__title{
 		padding: 0px 12px;

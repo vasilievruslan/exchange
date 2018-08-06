@@ -219,7 +219,6 @@
 					var data = res.data._items
 					data.forEach(function(element){
 						element.volume = element.volume / 10**18;
-						element.value = element.volume / 10**18;
 						var newDate = new Date(element.date)
 						element.date = newDate;
 					})
