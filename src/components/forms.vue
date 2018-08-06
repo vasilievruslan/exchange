@@ -248,6 +248,7 @@
 				
 			},
 			withdraw(e) {
+				const vm = this;
 				e.preventDefault();
 				if (this.withdrawToken == '0x0000000000000000000000000000000000000000') {
 					exchange.withdraw(this.contract, this.from, this.withdrawAmount * 10**18, function(h){

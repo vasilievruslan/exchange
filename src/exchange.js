@@ -49,11 +49,11 @@ export default{
 			function(err, hash){
 				if (!err){
 					str = hash;
-					callback(hash);
 					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 				} else {
 					// alert(err);
 				}
+				callback(hash);
 		});
 		return await str;
 	},
@@ -67,16 +67,17 @@ export default{
 				} else {
 					// alert(err);
 				}
+				callback(hash);
 		});
 		await contract_.methods.depositToken(token_, amount_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 					str = hash;
-					callback(hash);
 				} else {
 					// alert(err);
 				}
+				callback(hash);
 		});
 		return await str
 	},
@@ -87,10 +88,10 @@ export default{
 				if (!err){
 					// alert(`https://kovan.etherscan.io/tx/${hash}`);
 					str = hash;
-					callback(hash);
 				} else {
 					// alert(err);
 				}
+				callback(hash);
 		});
 		return await str;
 	},

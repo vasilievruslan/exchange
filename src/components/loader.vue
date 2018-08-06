@@ -52,7 +52,7 @@
 	.logo-continer{
 		width: 90px;
 		height: 90px;
-		background: #fff;
+		background: #474747;
 		margin-bottom: 10px;
 		display: flex;
 		justify-content: center;

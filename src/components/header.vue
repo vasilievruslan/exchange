@@ -23,10 +23,10 @@
 		</div>
 		<div class="header__cotainer --right">
 			<ul :class="menu" class="header__navi">
-				<li class="header__navi-item"><a href="">github</a></li>
-				<li class="header__navi-item"><a href="">etherscan</a></li>
-				<li class="header__navi-item"><a href="">twitter</a></li>
-				<li class="header__navi-item"><a href="">telegram</a></li>
+				<li class="header__navi-item"><a target="_blank" @click.prevent href="">github</a></li>
+				<li class="header__navi-item"><a target="_blank" :href="etherscan">etherscan</a></li>
+				<li class="header__navi-item"><a target="_blank" @click.prevent href="">twitter</a></li>
+				<li class="header__navi-item"><a target="_blank" @click.prevent href="">telegram</a></li>
 			</ul>
 
 			<div class="header__langswitcher">
@@ -124,6 +124,9 @@
 			}
 		},
 		computed: {
+			etherscan(){
+				return settings.network.etherscan + 'address/' + settings.exchangeAddress
+			},
 			pairs() {
 				return settings.pairs;
 			},
