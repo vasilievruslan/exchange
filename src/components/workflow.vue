@@ -126,6 +126,7 @@
 		color: #fff;
 		border: 1px solid  #141414;
 		box-sizing: border-box;
+		overflow: scroll;
 	}
 	.charts{
 		width: 100%;
