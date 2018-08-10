@@ -66,7 +66,6 @@
 	const web3 = provider.connectWeb3();
 
 	export default {
-
 		data(){
 			return{
 				pairs: settings.pairs,
@@ -76,6 +75,13 @@
 			}
 		},
 		computed: {
+			room(){
+				return {
+					pair: this.pair.path,
+			    	t1: this.pair.tokens[0],
+			    	t2: this.pair.tokens[1],
+				}
+			},
 			lastDeal(){ 
 				return this.$refs.history.historyData[0];
 			}, 
@@ -84,6 +90,32 @@
 			},
 			pair(){
 				return this.pairs.find(x => x.path == this.pairID)
+			}
+		},
+		sockets:{
+		    connect(){
+		    	var vm = this;
+		    	console.log('socket connected');
+
+		    },
+		    ordersCollection(ordersCollection) {
+			   console.log('ordersCollection:', ordersCollection);
+			},
+			tradeHistoryCollection(tradeHistoryCollection) {
+				console.log('tradeHistoryCollection:', tradeHistoryCollection);
+			},
+			cancel(cancel) {
+			   console.log('cancel:', cancel);
+			},
+			trade(trade) {
+			   console.log('trade:', trade);
+			}
+		},
+		watch: {
+			pair() {
+				var vm = this;
+				this.$socket.emit('joinRoom', vm.room);
+				console.log(this.room)
 			}
 		},
 		components: {
@@ -99,13 +131,13 @@
 		},
 		created(){
 			var vm = this;
+
+			this.$socket.emit('joinRoom', vm.room);
 			try {
 				this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
 			} catch(e) {
-				// statements
 				console.log(e);
 			}
-
 			setInterval(function () {
 				try {
 					web3.eth.getAccounts().then(res => vm.from = res[0]);

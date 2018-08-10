@@ -15,11 +15,14 @@ import provider from './provider.js'
 
 import workflow from './components/workflow.vue'
 
+import VueSocketio from 'vue-socket.io';
+
 
 
 // var web3 = new Web3(Web3.currentProvider);
 // console.log(web3)
 
+Vue.use(VueSocketio, 'https://excaliburdev.herokuapp.com');
 
 Vue.use(VueResource)
 Vue.use(VueTabs)
@@ -37,6 +40,17 @@ var app = new Vue({
 	data: {
 		// accounts: VueWeb3.eth.accounts
 	},
+	// sockets:{
+	//     connect(){
+	//       console.log('socket connected')
+	//     },
+	//     ordersCollection(ordersCollection) {
+	// 	   console.log('ordersCollection:', ordersCollection);
+	// 	},
+	// 	tradeHistoryCollection(tradeHistoryCollection) {
+	// 		console.log('tradeHistoryCollection:', tradeHistoryCollection);
+	// 	},
+	// },
 	render: h => h(App),
 	router: router,	
 	created() {

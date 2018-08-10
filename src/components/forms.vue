@@ -213,6 +213,7 @@
 			pair: Object,
 			from: String,
 		},
+		
 		methods: {
 			closePopup(){
 				this.popup = false;
@@ -267,32 +268,30 @@
 				(async function(){
 					var nonce = Math.floor(Math.random() * 1000000) + 100
 					var expires = null;
+					var hash = null;
 					await web3.eth.getBlockNumber().then(res => expires = res + parseFloat(vm.picked))
-					await exchange.getSign(web3, vm.from, settings.exchangeAddress, tokenGet.toLowerCase(), amountGet * 10**18, tokenGive.toLowerCase(), amountGive * 10**18, expires, nonce)
+					await exchange.getSign(web3, vm.from, settings.exchangeAddress, tokenGet.toLowerCase(), amountGet * 10**18, tokenGive.toLowerCase(), amountGive * 10**18, expires, nonce, function(h){
+						hash = h;
+					})
 					.then(res => vm.sign = res)
-					await vm.resource.save({
-						"maker": vm.from.toLowerCase(),
-						"tokenGet": tokenGet.toLowerCase(),
-						"amountGet": parseFloat(amountGet) * 10**18,
-						"tokenGive": tokenGive.toLowerCase(),
-						"amountGive": parseFloat(amountGive) * 10**18,
-						"expires": expires,
-						"nonce": parseFloat(nonce),
-						"sig": vm.sign,
-						"orderType": orderType
-					})
-					.then(res => {
-						if (res.status !== 200) {
-							this.popup = true;
-							this.errorTitle = "INVALID ORDER ( Error " + res.status + ")"
-						}
-					})
-					.catch(err => {
-						console.log(err)
-						vm.error = err.body; 
-						vm.popup = true
-						vm.errorTitle = "INVALID ORDER (Error " + err.status + ")"
-					})
+
+					var price = orderType == 1 ? parseFloat(amountGet) / parseFloat(amountGive) : parseFloat(amountGive) / parseFloat(amountGet);
+
+					vm.$socket.emit('pushOrder',{
+					    "orderType": orderType,
+					    "pair": vm.pair.path,
+					    "maker": vm.from.toLowerCase(),
+					    "tokenGet": tokenGet.toLowerCase(),
+					    "amountGet": parseFloat(amountGet) * 10**18,
+					    "tokenGive": tokenGive.toLowerCase(),
+					    "amountGive": parseFloat(amountGive) * 10**18,
+					    "price": price,
+					    "expires": expires,
+					    "nonce": parseFloat(nonce),
+					    "orderFills": parseFloat(amountGet) * 10**18,
+					    "hash": hash,
+					    "sig": vm.sign,
+					});
 				})()
 			},
 

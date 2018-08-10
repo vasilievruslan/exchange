@@ -33,7 +33,7 @@
 		watch: {
 			pair() {
 				this.getChartData();
-				console.log('new chart!')
+				// console.log('new chart!')
 			}
 		},
 		methods: {
@@ -207,9 +207,6 @@
 							}]
 						}
 					});
-
-					console.log(vm.chart)
-
 				})
 				
 			},

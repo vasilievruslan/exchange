@@ -129,9 +129,9 @@ export default{
 	// 	// var hash = rderHash(contract_, tokenGet, amountGet, tokenGive, amountGive, expires, nonce);
 	// 	// var sig = sign(from_, hash);
 	// },
-	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_, callback) {
+	trade: async function (contract_, from_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_, pair_, callback) {
 		let str;
-		await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_).send({from:from_},
+		await contract_.methods.trade(tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, user_, v_, r_, s_, amount_, pair_).send({from:from_},
 			function(err, hash){
 				if (!err){
 					// hashInput_ = String(hash);
@@ -195,10 +195,9 @@ export default{
 	orderHash: function (web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
 		return web3_.utils.soliditySha3(contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
 	},
-	getSign: function(web3_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_) {
+	getSign: function(web3_, from_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_, callback) {
 		var hash = this.orderHash(web3_, contract_, tokenGet_, amountGet_, tokenGive_, amountGive_, expires_, nonce_);
-		// alert('getSign: ' + this.sign(web3_, from_, hash));
-		// alert(`hash: ${hash}`)
+		callback(hash);
 		return this.sign(web3_, from_, hash);
 	},
 	approve: async function (contract_, from_, spender_, value_) {

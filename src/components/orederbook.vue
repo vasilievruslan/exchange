@@ -188,6 +188,11 @@
 			},
 
 		},
+		sockets: {
+			pushOrder(pushOrder) {
+				console.log('pushOrder:', pushOrder);
+			},
+		},
 		components: {
 			alert
 		},
@@ -257,11 +262,12 @@
 				}else{
 					vm.orderData.amount = vm.order.amount
 				}
-				// console.log([vm.from.toLowerCase(), vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.order.amount * 10**18])
+				console.log([vm.from.toLowerCase(), vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.order.amount * 10**18, vm.pair.path])
 				// console.log(typeof vm.orderData.amount)
-				await exchange.trade(vm.contract, vm.from,vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.orderData.amount * 10**18, function(h) {
-					vm.txhash = String(h);
-					vm.popup = true
+				await exchange.trade(vm.contract, vm.from, vm.order.tokenGet, vm.order.amountGet, vm.order.tokenGive, vm.order.amountGive, vm.order.expires, vm.order.nonce, vm.order.user, vm.order.v, vm.order.r, vm.order.s, vm.orderData.amount * 10**18, vm.pair.path,
+					function(h) {
+						vm.txhash = String(h);
+						vm.popup = true
 				}).then(res => {
 					vm.buyFrom = false;
 				}, err => console.log(err))

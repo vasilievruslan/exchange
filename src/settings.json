@@ -23,96 +23,9 @@
 	"eventsEndBlock": "latest", 
 	"paginationLimit": 100,
 	"isLocal": 0,
-	"exchangeAddress": "0x004e98C70Dbd2B55212a0aDb73F80e630A26F0fA",
+	"exchangeAddress": "0x27f5D11e2523B069b1e84F01C0b3B3B193522489",
 	"exchangeAbi":
 	[
-		{
-			"constant": false,
-			"inputs": [
-				{
-					"name": "tokenGet",
-					"type": "address"
-				},
-				{
-					"name": "amountGet",
-					"type": "uint256"
-				},
-				{
-					"name": "tokenGive",
-					"type": "address"
-				},
-				{
-					"name": "amountGive",
-					"type": "uint256"
-				},
-				{
-					"name": "expires",
-					"type": "uint256"
-				},
-				{
-					"name": "nonce",
-					"type": "uint256"
-				},
-				{
-					"name": "v",
-					"type": "uint8"
-				},
-				{
-					"name": "r",
-					"type": "bytes32"
-				},
-				{
-					"name": "s",
-					"type": "bytes32"
-				}
-			],
-			"name": "cancelOrder",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
-		},
-		{
-			"constant": false,
-			"inputs": [
-				{
-					"name": "state_",
-					"type": "bool"
-				}
-			],
-			"name": "changeTradeState",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
-		},
-		{
-			"constant": false,
-			"inputs": [],
-			"name": "deposit",
-			"outputs": [],
-			"payable": true,
-			"type": "function",
-			"stateMutability": "payable"
-		},
-		{
-			"constant": false,
-			"inputs": [
-				{
-					"name": "token",
-					"type": "address"
-				},
-				{
-					"name": "amount",
-					"type": "uint256"
-				}
-			],
-			"name": "depositToken",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
-		},
 		{
 			"constant": false,
 			"inputs": [
@@ -148,93 +61,339 @@
 			"stateMutability": "nonpayable"
 		},
 		{
-			"anonymous": false,
+			"constant": true,
 			"inputs": [
 				{
-					"indexed": false,
+					"name": "",
+					"type": "address"
+				},
+				{
+					"name": "",
+					"type": "bytes32"
+				}
+			],
+			"name": "orderFills",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "withdraw",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
 					"name": "token",
 					"type": "address"
 				},
 				{
-					"indexed": false,
-					"name": "user",
-					"type": "address"
-				},
-				{
-					"indexed": false,
 					"name": "amount",
-					"type": "uint256"
-				},
-				{
-					"indexed": false,
-					"name": "balance",
 					"type": "uint256"
 				}
 			],
-			"name": "Deposit",
-			"type": "event"
+			"name": "depositToken",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
 		},
 		{
-			"anonymous": false,
+			"constant": true,
 			"inputs": [
 				{
-					"indexed": false,
+					"name": "",
+					"type": "address"
+				},
+				{
+					"name": "",
+					"type": "address"
+				}
+			],
+			"name": "tokens",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "tradeState",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "token",
+					"type": "address"
+				},
+				{
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "withdrawToken",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "checkAdmin",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "",
+					"type": "address"
+				},
+				{
+					"name": "",
+					"type": "bytes32"
+				}
+			],
+			"name": "orders",
+			"outputs": [
+				{
+					"name": "",
+					"type": "bool"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"constant": false,
+			"inputs": [],
+			"name": "deposit",
+			"outputs": [],
+			"payable": true,
+			"type": "function",
+			"stateMutability": "payable"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
 					"name": "tokenGet",
 					"type": "address"
 				},
 				{
-					"indexed": false,
 					"name": "amountGet",
 					"type": "uint256"
 				},
 				{
-					"indexed": false,
 					"name": "tokenGive",
 					"type": "address"
 				},
 				{
-					"indexed": false,
 					"name": "amountGive",
 					"type": "uint256"
 				},
 				{
-					"indexed": false,
 					"name": "expires",
 					"type": "uint256"
 				},
 				{
-					"indexed": false,
 					"name": "nonce",
 					"type": "uint256"
 				},
 				{
-					"indexed": false,
-					"name": "user",
-					"type": "address"
-				},
-				{
-					"indexed": false,
 					"name": "v",
 					"type": "uint8"
 				},
 				{
-					"indexed": false,
 					"name": "r",
 					"type": "bytes32"
 				},
 				{
-					"indexed": false,
 					"name": "s",
 					"type": "bytes32"
 				},
 				{
-					"indexed": false,
-					"name": "hash",
-					"type": "bytes32"
+					"name": "pair",
+					"type": "string"
 				}
 			],
-			"name": "Cancel",
-			"type": "event"
+			"name": "cancelOrder",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "state_",
+					"type": "bool"
+				}
+			],
+			"name": "changeTradeState",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "tokenGet",
+					"type": "address"
+				},
+				{
+					"name": "amountGet",
+					"type": "uint256"
+				},
+				{
+					"name": "tokenGive",
+					"type": "address"
+				},
+				{
+					"name": "amountGive",
+					"type": "uint256"
+				},
+				{
+					"name": "expires",
+					"type": "uint256"
+				},
+				{
+					"name": "nonce",
+					"type": "uint256"
+				},
+				{
+					"name": "user",
+					"type": "address"
+				},
+				{
+					"name": "v",
+					"type": "uint8"
+				},
+				{
+					"name": "r",
+					"type": "bytes32"
+				},
+				{
+					"name": "s",
+					"type": "bytes32"
+				},
+				{
+					"name": "amount",
+					"type": "uint256"
+				},
+				{
+					"name": "pair",
+					"type": "string"
+				}
+			],
+			"name": "trade",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{
+					"name": "newAdmin",
+					"type": "address"
+				}
+			],
+			"name": "transferOwnership",
+			"outputs": [],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "nonpayable"
+		},
+		{
+			"constant": true,
+			"inputs": [
+				{
+					"name": "token",
+					"type": "address"
+				},
+				{
+					"name": "user",
+					"type": "address"
+				}
+			],
+			"name": "balanceOf",
+			"outputs": [
+				{
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"constant": true,
+			"inputs": [],
+			"name": "admin",
+			"outputs": [
+				{
+					"name": "",
+					"type": "address"
+				}
+			],
+			"payable": false,
+			"type": "function",
+			"stateMutability": "view"
+		},
+		{
+			"inputs": [],
+			"payable": false,
+			"type": "constructor",
+			"stateMutability": "nonpayable"
 		},
 		{
 			"anonymous": false,
@@ -284,58 +443,71 @@
 			"type": "event"
 		},
 		{
-			"constant": false,
+			"anonymous": false,
 			"inputs": [
 				{
+					"indexed": false,
 					"name": "tokenGet",
 					"type": "address"
 				},
 				{
+					"indexed": false,
 					"name": "amountGet",
 					"type": "uint256"
 				},
 				{
+					"indexed": false,
 					"name": "tokenGive",
 					"type": "address"
 				},
 				{
+					"indexed": false,
 					"name": "amountGive",
 					"type": "uint256"
 				},
 				{
+					"indexed": false,
 					"name": "expires",
 					"type": "uint256"
 				},
 				{
+					"indexed": false,
 					"name": "nonce",
 					"type": "uint256"
 				},
 				{
+					"indexed": false,
 					"name": "user",
 					"type": "address"
 				},
 				{
+					"indexed": false,
 					"name": "v",
 					"type": "uint8"
 				},
 				{
+					"indexed": false,
 					"name": "r",
 					"type": "bytes32"
 				},
 				{
+					"indexed": false,
 					"name": "s",
 					"type": "bytes32"
 				},
 				{
-					"name": "amount",
-					"type": "uint256"
+					"indexed": false,
+					"name": "hash",
+					"type": "bytes32"
+				},
+				{
+					"indexed": false,
+					"name": "pair",
+					"type": "string"
 				}
 			],
-			"name": "trade",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
+			"name": "Cancel",
+			"type": "event"
 		},
 		{
 			"anonymous": false,
@@ -374,6 +546,11 @@
 					"indexed": false,
 					"name": "hash",
 					"type": "bytes32"
+				},
+				{
+					"indexed": false,
+					"name": "pair",
+					"type": "string"
 				}
 			],
 			"name": "Trade",
@@ -403,194 +580,35 @@
 					"type": "uint256"
 				}
 			],
-			"name": "Withdraw",
+			"name": "Deposit",
 			"type": "event"
 		},
 		{
-			"constant": false,
+			"anonymous": false,
 			"inputs": [
 				{
-					"name": "newAdmin",
-					"type": "address"
-				}
-			],
-			"name": "transferOwnership",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
-		},
-		{
-			"inputs": [],
-			"payable": false,
-			"type": "constructor",
-			"stateMutability": "nonpayable"
-		},
-		{
-			"constant": false,
-			"inputs": [
-				{
-					"name": "amount",
-					"type": "uint256"
-				}
-			],
-			"name": "withdraw",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
-		},
-		{
-			"constant": false,
-			"inputs": [
-				{
+					"indexed": false,
 					"name": "token",
 					"type": "address"
 				},
 				{
-					"name": "amount",
-					"type": "uint256"
-				}
-			],
-			"name": "withdrawToken",
-			"outputs": [],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "nonpayable"
-		},
-		{
-			"constant": true,
-			"inputs": [],
-			"name": "admin",
-			"outputs": [
-				{
-					"name": "",
-					"type": "address"
-				}
-			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
-		},
-		{
-			"constant": true,
-			"inputs": [
-				{
-					"name": "token",
-					"type": "address"
-				},
-				{
+					"indexed": false,
 					"name": "user",
 					"type": "address"
-				}
-			],
-			"name": "balanceOf",
-			"outputs": [
+				},
 				{
-					"name": "",
+					"indexed": false,
+					"name": "amount",
+					"type": "uint256"
+				},
+				{
+					"indexed": false,
+					"name": "balance",
 					"type": "uint256"
 				}
 			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
-		},
-		{
-			"constant": true,
-			"inputs": [],
-			"name": "checkAdmin",
-			"outputs": [
-				{
-					"name": "",
-					"type": "bool"
-				}
-			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
-		},
-		{
-			"constant": true,
-			"inputs": [
-				{
-					"name": "",
-					"type": "address"
-				},
-				{
-					"name": "",
-					"type": "bytes32"
-				}
-			],
-			"name": "orderFills",
-			"outputs": [
-				{
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
-		},
-		{
-			"constant": true,
-			"inputs": [
-				{
-					"name": "",
-					"type": "address"
-				},
-				{
-					"name": "",
-					"type": "bytes32"
-				}
-			],
-			"name": "orders",
-			"outputs": [
-				{
-					"name": "",
-					"type": "bool"
-				}
-			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
-		},
-		{
-			"constant": true,
-			"inputs": [
-				{
-					"name": "",
-					"type": "address"
-				},
-				{
-					"name": "",
-					"type": "address"
-				}
-			],
-			"name": "tokens",
-			"outputs": [
-				{
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
-		},
-		{
-			"constant": true,
-			"inputs": [],
-			"name": "tradeState",
-			"outputs": [
-				{
-					"name": "",
-					"type": "bool"
-				}
-			],
-			"payable": false,
-			"type": "function",
-			"stateMutability": "view"
+			"name": "Withdraw",
+			"type": "event"
 		}
 	],
 	"tokenAbi":
