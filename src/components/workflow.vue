@@ -98,9 +98,6 @@
 		    	console.log('socket connected');
 
 		    },
-		    ordersCollection(ordersCollection) {
-			   console.log('ordersCollection:', ordersCollection);
-			},
 			tradeHistoryCollection(tradeHistoryCollection) {
 				console.log('tradeHistoryCollection:', tradeHistoryCollection);
 			},
@@ -114,8 +111,8 @@
 		watch: {
 			pair() {
 				var vm = this;
-				this.$socket.emit('joinRoom', vm.room);
-				console.log(this.room)
+				vm.$socket.emit('joinRoom', vm.room);
+				console.log(vm.room)
 			}
 		},
 		components: {
@@ -133,6 +130,7 @@
 			var vm = this;
 
 			this.$socket.emit('joinRoom', vm.room);
+			console.log(vm.room)
 			try {
 				this.contract = exchange.initContract(web3, settings.exchangeAbi, settings.exchangeAddress);
 			} catch(e) {

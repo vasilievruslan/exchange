@@ -22,7 +22,7 @@ import VueSocketio from 'vue-socket.io';
 // var web3 = new Web3(Web3.currentProvider);
 // console.log(web3)
 
-Vue.use(VueSocketio, 'https://excaliburdev.herokuapp.com');
+Vue.use(VueSocketio, 'https://excalibursocketdev.herokuapp.com/');
 
 Vue.use(VueResource)
 Vue.use(VueTabs)

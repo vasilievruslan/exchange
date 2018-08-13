@@ -90,7 +90,7 @@
 			vm.connection.onopen = function () {
 				vm.status = 'Choose name'
 				vm.disabled = false
-				console.log('conection is open')
+				// console.log('conection is open')
 			}; 
 			vm.connection.onmessage = function (message) {
 				try {

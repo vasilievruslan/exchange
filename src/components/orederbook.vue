@@ -143,8 +143,8 @@
 		name: 'orederbook',
 		data() {
 			return {
-				listBuy: [],
-				listSell: [],
+				ordersList: [],
+				
 				tokenGetAddress: this.pair.tokens[0],
 				tokenGiveAddress: this.pair.tokens[1],
 				personalOrders: null,
@@ -160,6 +160,12 @@
 			}
 		},
 		computed: {
+			listSell(){
+				return this.ordersList.filter(element => element.orderType = 0);
+			},
+			listBuy() {
+				return this.ordersList.filter(element => element.orderType = 1);
+			},
 			txlink(){
 				return `${settings.network.etherscan}tx/${this.txhash}`
 			},
@@ -191,6 +197,12 @@
 		sockets: {
 			pushOrder(pushOrder) {
 				console.log('pushOrder:', pushOrder);
+			},
+			ordersCollection(ordersCollection) {
+				const vm = this;
+
+				vm.ordersList = ordersCollection;
+				console.log('ordersCollection:', ordersCollection);
 			},
 		},
 		components: {
@@ -279,35 +291,35 @@
 			getOreders() {
 				const vm = this;
 
-				this.resource.get({type: 'orders', tokenGet: vm.tokenGetAddress, tokenGive: vm.tokenGiveAddress}).then(
-					response => vm.listBuy = response.data._items, 
-					err => console.log(err)
-				);
-				this.resource.get({type: 'orders', tokenGet: vm.tokenGiveAddress, tokenGive: vm.tokenGetAddress}).then(
-					response => vm.listSell = response.data._items, 
-					err => console.log(err)
-				);
+				// this.resource.get({type: 'orders', tokenGet: vm.tokenGetAddress, tokenGive: vm.tokenGiveAddress}).then(
+				// 	response => vm.listBuy = response.data._items, 
+				// 	err => console.log(err)
+				// );
+				// this.resource.get({type: 'orders', tokenGet: vm.tokenGiveAddress, tokenGive: vm.tokenGetAddress}).then(
+				// 	response => vm.listSell = response.data._items, 
+				// 	err => console.log(err)
+				// );
 			},
 			getPersonalOreders(){
 				const vm = this;
-				this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalOrders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&maker=${vm.from}&page=0`)
-				.then(res => {
-					var data = res.body._items;
-					data.forEach( function(element) {
-						if (element.tokenGet == vm.tokenGetAddress) {
-							element.orderType = 'buy'
-							element.price = element.amountGive / element.amountGet
-							element.amount = element.amountGet
-						}else{
-							element.amount = element.amountGive
-							element.orderType = 'sell'
-							element.price = element.amountGet / element.amountGive
-						}
-					});
-					vm.personalOrders = data
-				}, err => {
-					console.log(err)
-				});
+				// this.$http.get(`https://exapi1.herokuapp.com/v0.1/personalOrders?tget=${vm.tokenGetAddress}&tgive=${vm.tokenGiveAddress}&maker=${vm.from}&page=0`)
+				// .then(res => {
+				// 	var data = res.body._items;
+				// 	data.forEach( function(element) {
+				// 		if (element.tokenGet == vm.tokenGetAddress) {
+				// 			element.orderType = 'buy'
+				// 			element.price = element.amountGive / element.amountGet
+				// 			element.amount = element.amountGet
+				// 		}else{
+				// 			element.amount = element.amountGive
+				// 			element.orderType = 'sell'
+				// 			element.price = element.amountGet / element.amountGive
+				// 		}
+				// 	});
+				// 	vm.personalOrders = data
+				// }, err => {
+				// 	console.log(err)
+				// });
 			},
 			getFiat(){
 				const vm = this;
